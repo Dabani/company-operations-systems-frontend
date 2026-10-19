@@ -1,7 +1,7 @@
 import {
   IconLayoutDashboard, IconSettings, IconShieldLock, IconUsers, IconKey, IconBuilding, IconId, IconSitemap,
   IconMapPin, IconAdjustments, IconListDetails, IconHistory, IconHandStop, IconStairs, IconDoor, IconArchive,
-  IconBooks, IconHeadset, IconTicket, IconMessages, IconFiles, IconTrashX, IconCircle, type Icon,
+  IconBooks, IconHeadset, IconTicket, IconMessages, IconFiles, IconTrashX, IconServer2, IconDeviceLaptop, IconTruckDelivery, IconUserShield, IconAlertTriangle, IconClockExclamation, IconCircle, type Icon,
 } from '@tabler/icons-react';
 
 // Icon names stored in the database (menu_items.icon, widgets, lookups) resolve here.
@@ -9,7 +9,7 @@ import {
 const MAP: Record<string, Icon> = {
   IconLayoutDashboard, IconSettings, IconShieldLock, IconUsers, IconKey, IconBuilding, IconId, IconSitemap,
   IconMapPin, IconAdjustments, IconListDetails, IconHistory, IconHandStop, IconStairs, IconDoor, IconArchive, IconBooks,
-  IconHeadset, IconTicket, IconMessages, IconFiles, IconTrashX,
+  IconHeadset, IconTicket, IconMessages, IconFiles, IconTrashX, IconServer2, IconDeviceLaptop, IconTruckDelivery, IconUserShield, IconAlertTriangle, IconClockExclamation,
 };
 
 export const iconFor = (name?: string | null): Icon => (name && MAP[name]) || IconCircle;

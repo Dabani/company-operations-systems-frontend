@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { api } from '@/api/client';
 import { useAuth } from '@/auth/AuthContext';
 import { FileDrawer } from '@/components/FileDrawer';
+import { IncidentPanel } from '@/components/IncidentPanel';
 import { FileTypeIcon } from '@/components/FileTypeIcon';
 import { RichTextField } from '@/components/RichTextField';
 import { UploadModal } from '@/components/UploadModal';
@@ -84,6 +85,8 @@ export function CaseDetailPage() {
               </Group>
               <SafeHtml html={c.description} />
             </Card>
+
+            {c.type.code === 'incident' && <IncidentPanel caseId={c.id} />}
 
             {can('file.view') && (
               <Card padding="lg">

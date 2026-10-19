@@ -61,3 +61,15 @@ export async function downloadFile(id: string, name: string, version?: string) {
   a.remove();
   URL.revokeObjectURL(a.href);
 }
+
+/** Download any authenticated GET endpoint as a file (PDF forms, etc.). */
+export async function downloadBlob(url: string, filename: string) {
+  const res = await api.get(url, { responseType: 'blob' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(res.data);
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(a.href);
+}

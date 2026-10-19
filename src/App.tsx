@@ -16,6 +16,10 @@ import { AuditLogPage } from './pages/AuditLogPage';
 import { OrganizationPage } from './pages/OrganizationPage';
 import { ProfilePage } from './pages/ProfilePage';
 import { FilesPage } from './pages/FilesPage';
+import { AssetsPage } from './pages/AssetsPage';
+import { MovementsPage } from './pages/MovementsPage';
+import { AccessRegisterPage } from './pages/AccessRegisterPage';
+import { IncidentsPage } from './pages/IncidentsPage';
 import { CasesPage } from './pages/CasesPage';
 import { CaseDetailPage } from './pages/CaseDetailPage';
 import { SupportChatsPage } from './pages/SupportChatsPage';
@@ -44,6 +48,10 @@ export default function App() {
       <Route element={<AppLayout />}>
         <Route index element={<Navigate to="/dashboard" replace />} />
         <Route path="/dashboard" element={guard('dashboard.view', <DashboardPage />)} />
+        <Route path="/assets" element={guard('asset.view', <AssetsPage />)} />
+        <Route path="/assets/movements" element={guard('asset.request_movement', <MovementsPage />)} />
+        <Route path="/access-register" element={guard('access.view', <AccessRegisterPage />)} />
+        <Route path="/incidents" element={guard('case.view_own', <IncidentsPage />)} />
         <Route path="/files" element={guard('file.view', <FilesPage />)} />
         <Route path="/cases" element={guard('case.view_own', <CasesPage />)} />
         <Route path="/cases/:id" element={guard('case.view_own', <CaseDetailPage />)} />
