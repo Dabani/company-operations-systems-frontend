@@ -1,0 +1,22 @@
+:root { --ops-radius: 10px; }
+body { font-family: Verdana, Geneva, Tahoma, sans-serif; -webkit-tap-highlight-color: transparent; }
+
+/* Print: show only the content area, without chrome */
+@media print {
+  .no-print, header, nav, aside, .mantine-AppShell-header, .mantine-AppShell-navbar { display: none !important; }
+  .mantine-AppShell-main { padding: 0 !important; }
+  .print-only { display: block !important; }
+  table { font-size: 11px; }
+}
+.print-only { display: none; }
+
+/* Notch / home-indicator safe areas for installed PWA */
+.mantine-AppShell-header { padding-top: env(safe-area-inset-top); }
+
+/* Server-purified rich text (Tiptap HTML) */
+.rich-content { line-height: 1.6; word-break: break-word; }
+.rich-content > :first-child { margin-top: 0; } .rich-content > :last-child { margin-bottom: 0; }
+.rich-content p { margin: 0 0 .6em; } .rich-content ul, .rich-content ol { margin: 0 0 .6em; padding-left: 1.4em; }
+.rich-content h2 { font-size: 1.15em; margin: .8em 0 .4em; } .rich-content h3 { font-size: 1.05em; margin: .8em 0 .4em; }
+.rich-content blockquote { margin: 0 0 .6em; padding-left: .9em; border-left: 3px solid var(--mantine-color-brand-3); color: var(--mantine-color-dimmed); }
+.rich-content a { color: var(--mantine-color-brand-6); }
