@@ -1,4 +1,5 @@
 import axios, { AxiosError } from 'axios';
+import { notifications } from '@mantine/notifications';
 import i18n from '@/i18n';
 
 export const api = axios.create({
@@ -18,6 +19,10 @@ export const UNAUTHENTICATED_EVENT = 'ops:unauthenticated';
 api.interceptors.response.use(
   (r) => r,
   (err: AxiosError) => {
+    // No response at all while the browser reports offline: tell the user the action was NOT sent (writes are never queued).
+    if (!err.response && typeof navigator !== 'undefined' && !navigator.onLine && err.config?.method !== 'get') {
+      notifications.show({ id: 'ops-action-offline', color: 'orange', message: i18n.t('pwa.action_offline') });
+    }
     if (err.response?.status === 401 && !err.config?.url?.includes('auth/')) {
       window.dispatchEvent(new Event(UNAUTHENTICATED_EVENT));
     }

@@ -4,6 +4,7 @@ import en from './en';
 import fr from './fr';
 import rw from './rw';
 import sw from './sw';
+import b7 from './bundle7';
 
 export const LANGS = [
   { code: 'en', label: 'English' },
@@ -15,7 +16,10 @@ export const LANGS = [
 const saved = localStorage.getItem('ops.lang');
 
 i18n.use(initReactI18next).init({
-  resources: { en: { translation: en }, fr: { translation: fr }, rw: { translation: rw }, sw: { translation: sw } },
+  resources: {
+    en: { translation: { ...en, ...b7.en } }, fr: { translation: { ...fr, ...b7.fr } },
+    rw: { translation: { ...rw, ...b7.rw } }, sw: { translation: { ...sw, ...b7.sw } },
+  },
   lng: saved && LANGS.some((l) => l.code === saved) ? saved : 'en',
   fallbackLng: 'en',                 // English is the default language
   keySeparator: false,               // flat keys such as "menu.admin.users"

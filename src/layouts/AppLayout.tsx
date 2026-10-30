@@ -12,6 +12,7 @@ import { InstallPrompt } from '@/components/InstallPrompt';
 import { OfflineBanner } from '@/components/OfflineBanner';
 import { UserAvatar } from '@/components/UserAvatar';
 import { ChatWidget } from '@/components/ChatWidget';
+import { RouteBoundary } from '@/components/RouteBoundary';
 
 export function AppLayout() {
   const { t } = useTranslation();
@@ -65,7 +66,7 @@ export function AppLayout() {
 
       <AppShell.Main>
         <OfflineBanner />
-        <Outlet />
+        <RouteBoundary><Outlet /></RouteBoundary>
         {can('chat.use') && <ChatWidget />}
       </AppShell.Main>
     </AppShell>

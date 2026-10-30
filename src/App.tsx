@@ -4,37 +4,43 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 import { useAuth } from './auth/AuthContext';
 import { AppLayout } from './layouts/AppLayout';
 import { RequirePermission } from './components/RequirePermission';
-import { LoginPage } from './pages/LoginPage';
+import { RouteBoundary } from './components/RouteBoundary';
+import { page } from './lib/lazyPage';
 import { ForgotPasswordPage, ResetPasswordPage } from './pages/PasswordPages';
-import { DashboardPage } from './pages/DashboardPage';
-import { UsersPage } from './pages/UsersPage';
-import { RolesPage } from './pages/RolesPage';
-import { DepartmentsPage } from './pages/DepartmentsPage';
-import { LocationsPage } from './pages/LocationsPage';
-import { LookupsPage } from './pages/LookupsPage';
-import { AuditLogPage } from './pages/AuditLogPage';
-import { OrganizationPage } from './pages/OrganizationPage';
-import { ProfilePage } from './pages/ProfilePage';
-import { FilesPage } from './pages/FilesPage';
-import { RecordsPage } from './pages/RecordsPage';
-import { ArchiveAccessPage } from './pages/ArchiveAccessPage';
-import { InventoryPage } from './pages/InventoryPage';
-import { DisposalPage } from './pages/DisposalPage';
-import { RetentionPage } from './pages/RetentionPage';
-import { LegalReferencesPage } from './pages/LegalReferencesPage';
-import { ComplianceCalendarPage } from './pages/ComplianceCalendarPage';
-import { BackupsPage } from './pages/BackupsPage';
-import { TrainingPage } from './pages/TrainingPage';
-import { AuditsPage } from './pages/AuditsPage';
-import { ManagementReportsPage } from './pages/ManagementReportsPage';
-import { AssetsPage } from './pages/AssetsPage';
-import { MovementsPage } from './pages/MovementsPage';
-import { AccessRegisterPage } from './pages/AccessRegisterPage';
-import { IncidentsPage } from './pages/IncidentsPage';
-import { CasesPage } from './pages/CasesPage';
-import { CaseDetailPage } from './pages/CaseDetailPage';
-import { SupportChatsPage } from './pages/SupportChatsPage';
-import { NotFoundPage } from './pages/ErrorPages';
+
+const pg = page;   // route-level code splitting: each screen is its own chunk, fetched on first visit
+const LoginPage = pg(() => import('./pages/LoginPage'), 'LoginPage');
+const DashboardPage = pg(() => import('./pages/DashboardPage'), 'DashboardPage');
+const UsersPage = pg(() => import('./pages/UsersPage'), 'UsersPage');
+const RolesPage = pg(() => import('./pages/RolesPage'), 'RolesPage');
+const DepartmentsPage = pg(() => import('./pages/DepartmentsPage'), 'DepartmentsPage');
+const LocationsPage = pg(() => import('./pages/LocationsPage'), 'LocationsPage');
+const LookupsPage = pg(() => import('./pages/LookupsPage'), 'LookupsPage');
+const AuditLogPage = pg(() => import('./pages/AuditLogPage'), 'AuditLogPage');
+const OrganizationPage = pg(() => import('./pages/OrganizationPage'), 'OrganizationPage');
+const ProfilePage = pg(() => import('./pages/ProfilePage'), 'ProfilePage');
+const FilesPage = pg(() => import('./pages/FilesPage'), 'FilesPage');
+const RecordsPage = pg(() => import('./pages/RecordsPage'), 'RecordsPage');
+const ArchiveAccessPage = pg(() => import('./pages/ArchiveAccessPage'), 'ArchiveAccessPage');
+const InventoryPage = pg(() => import('./pages/InventoryPage'), 'InventoryPage');
+const DisposalPage = pg(() => import('./pages/DisposalPage'), 'DisposalPage');
+const RetentionPage = pg(() => import('./pages/RetentionPage'), 'RetentionPage');
+const LegalReferencesPage = pg(() => import('./pages/LegalReferencesPage'), 'LegalReferencesPage');
+const ComplianceCalendarPage = pg(() => import('./pages/ComplianceCalendarPage'), 'ComplianceCalendarPage');
+const BackupsPage = pg(() => import('./pages/BackupsPage'), 'BackupsPage');
+const TrainingPage = pg(() => import('./pages/TrainingPage'), 'TrainingPage');
+const AuditsPage = pg(() => import('./pages/AuditsPage'), 'AuditsPage');
+const ManagementReportsPage = pg(() => import('./pages/ManagementReportsPage'), 'ManagementReportsPage');
+const AssetsPage = pg(() => import('./pages/AssetsPage'), 'AssetsPage');
+const MovementsPage = pg(() => import('./pages/MovementsPage'), 'MovementsPage');
+const AccessRegisterPage = pg(() => import('./pages/AccessRegisterPage'), 'AccessRegisterPage');
+const IncidentsPage = pg(() => import('./pages/IncidentsPage'), 'IncidentsPage');
+const CasesPage = pg(() => import('./pages/CasesPage'), 'CasesPage');
+const CaseDetailPage = pg(() => import('./pages/CaseDetailPage'), 'CaseDetailPage');
+const SupportChatsPage = pg(() => import('./pages/SupportChatsPage'), 'SupportChatsPage');
+const NotFoundPage = pg(() => import('./pages/ErrorPages'), 'NotFoundPage');
+const ReportsPage = pg(() => import('./pages/ReportsPage'), 'ReportsPage');
+const ReportViewPage = pg(() => import('./pages/ReportViewPage'), 'ReportViewPage');
 
 export default function App() {
   const { me, loading } = useAuth();
@@ -43,12 +49,12 @@ export default function App() {
 
   if (!me) {
     return (
-      <Routes>
+      <RouteBoundary><Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
         <Route path="/reset-password" element={<ResetPasswordPage />} />
         <Route path="*" element={<Navigate to="/login" replace />} />
-      </Routes>
+      </Routes></RouteBoundary>
     );
   }
 
@@ -74,6 +80,8 @@ export default function App() {
         <Route path="/compliance/audits" element={guard('compliance.view', <AuditsPage />)} />
         <Route path="/compliance/reports" element={guard(['report.receive', 'compliance.view'], <ManagementReportsPage />)} />
         <Route path="/compliance/legal" element={guard('archive.view', <LegalReferencesPage />)} />
+        <Route path="/reports" element={guard(['report.view', 'report.receive'], <ReportsPage />)} />
+        <Route path="/reports/:code" element={guard(['report.view', 'report.receive'], <ReportViewPage />)} />
         <Route path="/files" element={guard('file.view', <FilesPage />)} />
         <Route path="/cases" element={guard('case.view_own', <CasesPage />)} />
         <Route path="/cases/:id" element={guard('case.view_own', <CaseDetailPage />)} />

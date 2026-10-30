@@ -5,7 +5,7 @@ import path from 'node:path';
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
-  const api = env.VITE_API_URL || 'http://company-ops.test';
+  const api = env.VITE_API_URL || 'http://cops-web.test';
 
   return {
     resolve: { alias: { '@': path.resolve(__dirname, 'src') } },
