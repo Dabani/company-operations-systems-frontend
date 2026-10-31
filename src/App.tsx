@@ -1,12 +1,12 @@
 import { Center, Loader } from '@mantine/core';
 import type { ReactElement } from 'react';
-import { Navigate, Route, Routes } from 'react-router-dom';
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import { useAuth } from './auth/AuthContext';
 import { AppLayout } from './layouts/AppLayout';
 import { RequirePermission } from './components/RequirePermission';
 import { RouteBoundary } from './components/RouteBoundary';
 import { page } from './lib/lazyPage';
-import { ForgotPasswordPage, ResetPasswordPage } from './pages/PasswordPages';
+import { ActivatePage, ForgotPasswordPage, ResetPasswordPage } from './pages/PasswordPages';
 
 const pg = page;   // route-level code splitting: each screen is its own chunk, fetched on first visit
 const LoginPage = pg(() => import('./pages/LoginPage'), 'LoginPage');
@@ -44,15 +44,26 @@ const ReportViewPage = pg(() => import('./pages/ReportViewPage'), 'ReportViewPag
 
 export default function App() {
   const { me, loading } = useAuth();
+  const { pathname } = useLocation();
 
   if (loading) return <Center h="100dvh"><Loader /></Center>;
+
+  // Links from e-mails must open whether or not somebody is already signed in on this browser (the page itself asks them to
+  // sign out). Previously a signed-in administrator testing an invitation landed on "page not found".
+  if (pathname === '/activate' || pathname === '/reset-password') {
+    return (
+      <RouteBoundary><Routes>
+        <Route path="/activate" element={<ActivatePage />} />
+        <Route path="/reset-password" element={<ResetPasswordPage />} />
+      </Routes></RouteBoundary>
+    );
+  }
 
   if (!me) {
     return (
       <RouteBoundary><Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-        <Route path="/reset-password" element={<ResetPasswordPage />} />
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes></RouteBoundary>
     );

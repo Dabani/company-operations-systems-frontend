@@ -1,4 +1,4 @@
-import { ActionIcon, Box, Group, Menu, Pagination, Paper, Select, Skeleton, Stack, Table, Text, TextInput, Button, Collapse, SimpleGrid } from '@mantine/core';
+import { ActionIcon, Box, Checkbox, Group, Menu, Pagination, Paper, Select, Skeleton, Stack, Table, Text, TextInput, Button, Collapse, SimpleGrid } from '@mantine/core';
 import { useDebouncedValue, useDisclosure } from '@mantine/hooks';
 import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import { IconArrowDown, IconArrowUp, IconArrowsSort, IconDownload, IconFilter, IconPrinter, IconSearch, IconFileSpreadsheet, IconFileTypeCsv, IconInbox } from '@tabler/icons-react';
@@ -23,10 +23,14 @@ interface Props<T extends { id: string }> {
   onRowClick?: (row: T) => void;
   exportable?: boolean;
   extraParams?: Record<string, unknown>;   // fixed query params, e.g. { mine: 1 }
+  /** Enables row checkboxes; the returned buttons are shown in a bar while rows are selected. */
+  bulk?: (selected: T[], clear: () => void) => ReactNode;
+  /** Rows that cannot be selected (e.g. yourself). */
+  selectableRow?: (row: T) => boolean;
 }
 
 /** Enhanced list: search, filter, sort, pagination, CSV/XLSX export (server-side), print. */
-export function DataList<T extends { id: string }>({ title, endpoint, queryKey, columns, filters = [], defaultSort, toolbar, rowActions, onRowClick, exportable = true, extraParams }: Props<T>) {
+export function DataList<T extends { id: string }>({ title, endpoint, queryKey, columns, filters = [], defaultSort, toolbar, rowActions, onRowClick, exportable = true, extraParams, bulk, selectableRow }: Props<T>) {
   const { t } = useTranslation();
   const { can } = useAuth();
   const [search, setSearch] = useState('');
@@ -37,7 +41,9 @@ export function DataList<T extends { id: string }>({ title, endpoint, queryKey, 
   const [filterValues, setFilterValues] = useState<Record<string, string | null>>({});
   const [showFilters, { toggle: toggleFilters }] = useDisclosure(false);
 
+  const [picked, setPicked] = useState<Record<string, T>>({});
   useEffect(() => { setPage(1); }, [debounced, perPage, sort, filterValues, JSON.stringify(extraParams)]);
+  useEffect(() => { setPicked({}); }, [debounced, perPage, sort, filterValues, JSON.stringify(extraParams)]);
 
   const params = {
     ...extraParams,
@@ -58,6 +64,11 @@ export function DataList<T extends { id: string }>({ title, endpoint, queryKey, 
   const rows = q.data?.data ?? [];
   const meta = q.data?.meta;
   const canExport = exportable && can('data.export');
+  const selectable = rows.filter((r) => !selectableRow || selectableRow(r));
+  const selected = Object.values(picked);
+  const allOnPage = selectable.length > 0 && selectable.every((r) => picked[r.id]);
+  const toggleRow = (r: T) => setPicked((p) => { const n = { ...p }; if (n[r.id]) delete n[r.id]; else n[r.id] = r; return n; });
+  const toggleAll = () => setPicked((p) => { const n = { ...p }; if (allOnPage) selectable.forEach((r) => delete n[r.id]); else selectable.forEach((r) => { n[r.id] = r; }); return n; });
 
   return (
     <Stack gap="md">
@@ -93,11 +104,21 @@ export function DataList<T extends { id: string }>({ title, endpoint, queryKey, 
 
       <Text className="print-only" fw={700}>{title} — {new Date().toLocaleString()}</Text>
 
+      {bulk && selected.length > 0 && (
+        <Paper withBorder p="xs" className="no-print" bg="var(--mantine-primary-color-light)">
+          <Group justify="space-between" wrap="wrap" gap="xs">
+            <Text size="sm" fw={600}>{t('common.selected', { count: selected.length })}</Text>
+            <Group gap="xs" wrap="wrap">{bulk(selected, () => setPicked({}))}<Button size="xs" variant="subtle" color="gray" onClick={() => setPicked({})}>{t('common.clear_selection')}</Button></Group>
+          </Group>
+        </Paper>
+      )}
+
       <Paper withBorder>
         <Table.ScrollContainer minWidth={640}>
           <Table highlightOnHover={!!onRowClick} verticalSpacing="sm" striped="odd">
             <Table.Thead>
               <Table.Tr>
+                {bulk && <Table.Th w={1} className="no-print"><Checkbox aria-label={t('common.select_all')} checked={allOnPage} indeterminate={!allOnPage && selected.length > 0} onChange={toggleAll} disabled={selectable.length === 0} /></Table.Th>}
                 {columns.map((c) => (
                   <Table.Th key={c.key} visibleFrom={c.visibleFrom} style={{ cursor: c.sortable ? 'pointer' : 'default', whiteSpace: 'nowrap' }}
                     onClick={c.sortable ? () => toggleSort(c.key) : undefined}>
@@ -114,10 +135,11 @@ export function DataList<T extends { id: string }>({ title, endpoint, queryKey, 
             </Table.Thead>
             <Table.Tbody>
               {q.isLoading && Array.from({ length: 5 }).map((_, i) => (
-                <Table.Tr key={i}>{columns.map((c) => <Table.Td key={c.key}><Skeleton h={14} /></Table.Td>)}{rowActions && <Table.Td />}</Table.Tr>
+                <Table.Tr key={i}>{bulk && <Table.Td />}{columns.map((c) => <Table.Td key={c.key}><Skeleton h={14} /></Table.Td>)}{rowActions && <Table.Td />}</Table.Tr>
               ))}
               {rows.map((row) => (
-                <Table.Tr key={row.id} onClick={onRowClick ? () => onRowClick(row) : undefined} style={{ cursor: onRowClick ? 'pointer' : 'default' }}>
+                <Table.Tr key={row.id} onClick={onRowClick ? () => onRowClick(row) : undefined} style={{ cursor: onRowClick ? 'pointer' : 'default' }} bg={picked[row.id] ? 'var(--mantine-primary-color-light)' : undefined}>
+                  {bulk && <Table.Td className="no-print" onClick={(e) => e.stopPropagation()}><Checkbox aria-label={t('common.select_row')} checked={!!picked[row.id]} onChange={() => toggleRow(row)} disabled={!!selectableRow && !selectableRow(row)} /></Table.Td>}
                   {columns.map((c) => (
                     <Table.Td key={c.key} visibleFrom={c.visibleFrom}>
                       {c.render ? c.render(row) : String((row as Record<string, unknown>)[c.key] ?? '—')}
