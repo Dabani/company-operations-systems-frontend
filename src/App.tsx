@@ -38,6 +38,12 @@ const IncidentsPage = pg(() => import('./pages/IncidentsPage'), 'IncidentsPage')
 const CasesPage = pg(() => import('./pages/CasesPage'), 'CasesPage');
 const CaseDetailPage = pg(() => import('./pages/CaseDetailPage'), 'CaseDetailPage');
 const SupportChatsPage = pg(() => import('./pages/SupportChatsPage'), 'SupportChatsPage');
+const ApprovalsPage = pg(() => import('./pages/ApprovalsPage'), 'ApprovalsPage');
+const EmployeesPage = pg(() => import('./pages/EmployeesPage'), 'EmployeesPage');
+const ClientsPage = pg(() => import('./pages/ClientsPage'), 'ClientsPage');
+const RulesPage = pg(() => import('./pages/RulesPage'), 'RulesPage');
+const ApprovalFlowsPage = pg(() => import('./pages/ApprovalFlowsPage'), 'ApprovalFlowsPage');
+const DepartmentAccessPage = pg(() => import('./pages/DepartmentAccessPage'), 'DepartmentAccessPage');
 const NotFoundPage = pg(() => import('./pages/ErrorPages'), 'NotFoundPage');
 const ReportsPage = pg(() => import('./pages/ReportsPage'), 'ReportsPage');
 const ReportViewPage = pg(() => import('./pages/ReportViewPage'), 'ReportViewPage');
@@ -104,6 +110,12 @@ export default function App() {
         <Route path="/admin/locations" element={guard('location.view', <LocationsPage />)} />
         <Route path="/admin/lookups" element={guard('lookup.view', <LookupsPage />)} />
         <Route path="/admin/audit-log" element={guard('audit_log.view', <AuditLogPage />)} />
+        <Route path="/approvals" element={guard(['approval.view', 'approval.act'], <ApprovalsPage />)} />
+        <Route path="/hr/employees" element={guard('employee.view', <EmployeesPage />)} />
+        <Route path="/clients" element={guard('client.view', <ClientsPage />)} />
+        <Route path="/admin/rules" element={guard('rules.view', <RulesPage />)} />
+        <Route path="/admin/approval-flows" element={guard('approval.configure', <ApprovalFlowsPage />)} />
+        <Route path="/admin/department-access" element={guard('scope.manage', <DepartmentAccessPage />)} />
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/login" element={<Navigate to="/dashboard" replace />} />
         <Route path="*" element={<NotFoundPage />} />
