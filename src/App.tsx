@@ -46,6 +46,8 @@ const ApprovalFlowsPage = pg(() => import('./pages/ApprovalFlowsPage'), 'Approva
 const DepartmentAccessPage = pg(() => import('./pages/DepartmentAccessPage'), 'DepartmentAccessPage');
 const ProjectsPage = pg(() => import('./pages/ProjectsPage'), 'ProjectsPage');
 const ProjectDetailPage = pg(() => import('./pages/ProjectDetailPage'), 'ProjectDetailPage');
+const TimePage = pg(() => import('./pages/TimePage'), 'TimePage');
+const RateCardsPage = pg(() => import('./pages/RateCardsPage'), 'RateCardsPage');
 const NotFoundPage = pg(() => import('./pages/ErrorPages'), 'NotFoundPage');
 const ReportsPage = pg(() => import('./pages/ReportsPage'), 'ReportsPage');
 const ReportViewPage = pg(() => import('./pages/ReportViewPage'), 'ReportViewPage');
@@ -120,6 +122,8 @@ export default function App() {
         <Route path="/admin/department-access" element={guard('scope.manage', <DepartmentAccessPage />)} />
         <Route path="/projects" element={guard('project.view', <ProjectsPage />)} />
         <Route path="/projects/:id" element={guard('project.view', <ProjectDetailPage />)} />
+        <Route path="/time" element={guard('time.track', <TimePage />)} />
+        <Route path="/admin/rate-cards" element={guard('rates.view', <RateCardsPage />)} />
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/login" element={<Navigate to="/dashboard" replace />} />
         <Route path="*" element={<NotFoundPage />} />

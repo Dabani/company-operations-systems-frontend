@@ -8,6 +8,7 @@ import { BrandLogo } from '@/components/BrandLogo';
 import { SidebarMenu } from '@/components/SidebarMenu';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { NotificationBell } from '@/components/NotificationBell';
+import { TimerWidget } from '@/components/TimerWidget';
 import { InstallPrompt } from '@/components/InstallPrompt';
 import { OfflineBanner } from '@/components/OfflineBanner';
 import { UserAvatar } from '@/components/UserAvatar';
@@ -39,6 +40,7 @@ export function AppLayout() {
             <ActionIcon variant="subtle" size="lg" aria-label={t('common.theme')} onClick={() => setColorScheme(scheme === 'dark' ? 'light' : 'dark')}>
               {scheme === 'dark' ? <IconSun size={20} /> : <IconMoon size={20} />}
             </ActionIcon>
+            <TimerWidget />
             <NotificationBell />
             <Menu position="bottom-end" width={230} shadow="md">
               <Menu.Target>

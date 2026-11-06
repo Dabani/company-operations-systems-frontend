@@ -1,5 +1,5 @@
 import { ActionIcon, Alert, Badge, Button, Card, Divider, Drawer, Group, Menu, Modal, ScrollArea, Select, Stack, Tabs, Text, TextInput, Textarea, Timeline } from '@mantine/core';
-import { IconDots, IconDownload, IconPaperclip, IconPlus, IconTrash } from '@tabler/icons-react';
+import { IconClock, IconDots, IconDownload, IconPaperclip, IconPlus, IconTrash } from '@tabler/icons-react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -137,6 +137,7 @@ export function ProjectDetailPage() {
             </Group>
             <Select label={t('projects.milestone')} clearable data={p.milestones.map((m) => ({ value: m.id, label: m.name }))} value={task.data.milestone_id} onChange={(v) => patch.mutate({ milestone_id: v })} />
           </> : <Text size="sm">{task.data.description}</Text>}
+          {canEdit && <Button size="xs" variant="light" leftSection={<IconClock size={14} />} onClick={() => api.post('/timer/start', { project_id: id, task_id: task.data!.id, stop_existing: true }).then(() => { toastOk(t('time.started')); void qc.invalidateQueries({ queryKey: ['timer'] }); }).catch(toastError)}>{t('time.start_task')}</Button>}
           {task.data.allowed_moves.length > 0 && <Group gap="xs">{task.data.allowed_moves.map((to) => <Button key={to} size="xs" variant={to === 'in_review' ? 'filled' : 'light'} onClick={() => move.mutate({ id: task.data!.id, status: to })}>{to === 'in_review' ? t('projects.request_review') : t('projects.move_to', { status: t(`projects.s.${to}`) })}</Button>)}</Group>}
           {task.data.blocked_by.some((b) => !['done', 'cancelled'].includes(b.status)) && <Alert color="red" variant="light">{t('projects.blocked_note')}</Alert>}
           <Divider label={t('projects.dependencies')} />
