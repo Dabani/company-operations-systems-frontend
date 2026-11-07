@@ -48,6 +48,9 @@ const ProjectsPage = pg(() => import('./pages/ProjectsPage'), 'ProjectsPage');
 const ProjectDetailPage = pg(() => import('./pages/ProjectDetailPage'), 'ProjectDetailPage');
 const TimePage = pg(() => import('./pages/TimePage'), 'TimePage');
 const RateCardsPage = pg(() => import('./pages/RateCardsPage'), 'RateCardsPage');
+const InvoicesPage = pg(() => import('./pages/InvoicesPage'), 'InvoicesPage');
+const InvoiceDetailPage = pg(() => import('./pages/InvoiceDetailPage'), 'InvoiceDetailPage');
+const TaxRatesPage = pg(() => import('./pages/TaxRatesPage'), 'TaxRatesPage');
 const NotFoundPage = pg(() => import('./pages/ErrorPages'), 'NotFoundPage');
 const ReportsPage = pg(() => import('./pages/ReportsPage'), 'ReportsPage');
 const ReportViewPage = pg(() => import('./pages/ReportViewPage'), 'ReportViewPage');
@@ -124,6 +127,9 @@ export default function App() {
         <Route path="/projects/:id" element={guard('project.view', <ProjectDetailPage />)} />
         <Route path="/time" element={guard('time.track', <TimePage />)} />
         <Route path="/admin/rate-cards" element={guard('rates.view', <RateCardsPage />)} />
+        <Route path="/invoices" element={guard('billing.view', <InvoicesPage />)} />
+        <Route path="/invoices/:id" element={guard('billing.view', <InvoiceDetailPage />)} />
+        <Route path="/admin/tax-rates" element={guard('billing.configure', <TaxRatesPage />)} />
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/login" element={<Navigate to="/dashboard" replace />} />
         <Route path="*" element={<NotFoundPage />} />

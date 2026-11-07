@@ -9,6 +9,7 @@ import p7a from './patch07a';
 import b8 from './bundle08';
 import b9 from './bundle09';
 import b10 from './bundle10';
+import b11 from './bundle11';
 
 export const LANGS = [
   { code: 'en', label: 'English' },
@@ -21,8 +22,8 @@ const saved = localStorage.getItem('ops.lang');
 
 i18n.use(initReactI18next).init({
   resources: {
-    en: { translation: { ...en, ...b7.en, ...p7a.en, ...b8.en, ...b9.en, ...b10.en } }, fr: { translation: { ...fr, ...b7.fr, ...p7a.fr, ...b8.fr, ...b9.fr, ...b10.fr } },
-    rw: { translation: { ...rw, ...b7.rw, ...p7a.rw, ...b8.rw, ...b9.rw, ...b10.rw } }, sw: { translation: { ...sw, ...b7.sw, ...p7a.sw, ...b8.sw, ...b9.sw, ...b10.sw } },
+    en: { translation: { ...en, ...b7.en, ...p7a.en, ...b8.en, ...b9.en, ...b10.en, ...b11.en } }, fr: { translation: { ...fr, ...b7.fr, ...p7a.fr, ...b8.fr, ...b9.fr, ...b10.fr, ...b11.fr } },
+    rw: { translation: { ...rw, ...b7.rw, ...p7a.rw, ...b8.rw, ...b9.rw, ...b10.rw, ...b11.rw } }, sw: { translation: { ...sw, ...b7.sw, ...p7a.sw, ...b8.sw, ...b9.sw, ...b10.sw, ...b11.sw } },
   },
   lng: saved && LANGS.some((l) => l.code === saved) ? saved : 'en',
   fallbackLng: 'en',                 // English is the default language
