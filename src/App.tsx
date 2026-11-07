@@ -51,6 +51,8 @@ const RateCardsPage = pg(() => import('./pages/RateCardsPage'), 'RateCardsPage')
 const InvoicesPage = pg(() => import('./pages/InvoicesPage'), 'InvoicesPage');
 const InvoiceDetailPage = pg(() => import('./pages/InvoiceDetailPage'), 'InvoiceDetailPage');
 const TaxRatesPage = pg(() => import('./pages/TaxRatesPage'), 'TaxRatesPage');
+const PortalApp = pg(() => import('./portal/PortalApp'), 'PortalApp');
+const ClientPortalAdminPage = pg(() => import('./pages/ClientPortalAdminPage'), 'ClientPortalAdminPage');
 const NotFoundPage = pg(() => import('./pages/ErrorPages'), 'NotFoundPage');
 const ReportsPage = pg(() => import('./pages/ReportsPage'), 'ReportsPage');
 const ReportViewPage = pg(() => import('./pages/ReportViewPage'), 'ReportViewPage');
@@ -58,6 +60,8 @@ const ReportViewPage = pg(() => import('./pages/ReportViewPage'), 'ReportViewPag
 export default function App() {
   const { me, loading } = useAuth();
   const { pathname } = useLocation();
+
+  if (pathname === '/portal' || pathname.startsWith('/portal/')) return <RouteBoundary><PortalApp /></RouteBoundary>;
 
   if (loading) return <Center h="100dvh"><Loader /></Center>;
 
@@ -130,6 +134,7 @@ export default function App() {
         <Route path="/invoices" element={guard('billing.view', <InvoicesPage />)} />
         <Route path="/invoices/:id" element={guard('billing.view', <InvoiceDetailPage />)} />
         <Route path="/admin/tax-rates" element={guard('billing.configure', <TaxRatesPage />)} />
+        <Route path="/admin/client-portal" element={guard('client.manage', <ClientPortalAdminPage />)} />
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/login" element={<Navigate to="/dashboard" replace />} />
         <Route path="*" element={<NotFoundPage />} />

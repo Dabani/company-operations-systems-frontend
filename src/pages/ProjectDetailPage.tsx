@@ -7,6 +7,7 @@ import { useParams, useSearchParams } from 'react-router-dom';
 import { api, downloadFile } from '@/api/client';
 import { UploadModal } from '@/components/UploadModal';
 import { ProjectBillingPanel } from '@/components/ProjectBillingPanel';
+import { ProjectClientPanel } from '@/components/ProjectClientPanel';
 import { PageHeader } from '@/components/PageHeader';
 import { useLookup } from '@/lib/useLookup';
 import { toastError, toastOk } from '@/lib/ui';
@@ -89,7 +90,7 @@ export function ProjectDetailPage() {
     <>
       <PageHeader title={`${p.code} · ${p.name}`} description={p.description ?? undefined} actions={<Badge variant="light">{t(`projects.ps.${p.status}`, { defaultValue: p.status })}</Badge>} />
       <Tabs defaultValue="board">
-        <Tabs.List mb="md"><Tabs.Tab value="board">{t('projects.board')}</Tabs.Tab><Tabs.Tab value="milestones">{t('projects.milestones')}</Tabs.Tab><Tabs.Tab value="members">{t('projects.members')}</Tabs.Tab><Tabs.Tab value="files">{t('files.attachments')}</Tabs.Tab><Tabs.Tab value="billing">{t('billing.title')}</Tabs.Tab></Tabs.List>
+        <Tabs.List mb="md"><Tabs.Tab value="board">{t('projects.board')}</Tabs.Tab><Tabs.Tab value="milestones">{t('projects.milestones')}</Tabs.Tab><Tabs.Tab value="members">{t('projects.members')}</Tabs.Tab><Tabs.Tab value="files">{t('files.attachments')}</Tabs.Tab><Tabs.Tab value="billing">{t('billing.title')}</Tabs.Tab><Tabs.Tab value="client">{t('cportal.tab')}</Tabs.Tab></Tabs.List>
 
         <Tabs.Panel value="board">
           <ScrollArea type="auto"><Group align="flex-start" wrap="nowrap" gap="md" pb="sm">
@@ -124,6 +125,7 @@ export function ProjectDetailPage() {
           {files.data?.map((f) => <Group key={f.id} justify="space-between"><Text size="sm">{f.name}</Text>{f.can.download && <ActionIcon variant="subtle" onClick={() => downloadFile(f.id, f.name).catch(toastError)}><IconDownload size={16} /></ActionIcon>}</Group>)}
         </Stack></Tabs.Panel>
         <Tabs.Panel value="billing"><ProjectBillingPanel projectId={p.id} isManager={mgr} projectStatus={p.status} /></Tabs.Panel>
+        <Tabs.Panel value="client"><ProjectClientPanel projectId={p.id} isManager={mgr} canComment={canEdit} /></Tabs.Panel>
       </Tabs>
 
       <Drawer opened={!!openTask} onClose={() => setSp({})} position="right" size="lg" title={task.data ? `${task.data.key} · ${task.data.title}` : ''}>
