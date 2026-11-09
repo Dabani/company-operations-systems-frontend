@@ -58,7 +58,7 @@ export function EmployeesPage() {
       <Modal opened={!!editing} onClose={() => setEditing(null)} title={editing === 'new' ? t('employees.new') : t('employees.edit')} size="lg" centered>
         <form onSubmit={form.onSubmit((v) => save.mutate(v))}>
           <Stack gap="sm">
-            <Group grow><TextInput label={t('employees.number')} required {...form.getInputProps('employee_number')} /><Select label={t('employees.category')} required data={cats.options} {...form.getInputProps('category_id')} /></Group>
+            <Group grow><Select label={t('employees.category')} required data={cats.options} {...form.getInputProps('category_id')} /></Group>
             <Group grow><TextInput label={t('employees.first_name')} required {...form.getInputProps('first_name')} /><TextInput label={t('employees.last_name')} required {...form.getInputProps('last_name')} /></Group>
             <Group grow><TextInput label={t('common.email')} {...form.getInputProps('email')} /><TextInput label={t('common.phone')} {...form.getInputProps('phone')} /></Group>
             <Group grow><Select label={t('employees.department')} clearable data={(depts.data ?? []).map((d) => ({ value: d.id, label: d.name }))} {...form.getInputProps('department_id')} />

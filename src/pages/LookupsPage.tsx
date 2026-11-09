@@ -83,7 +83,7 @@ export function LookupsPage() {
       <Modal opened={!!editing} onClose={() => setEditing(null)} title={editing === 'new' ? t('lookups.new') : t('common.edit')} centered>
         <form onSubmit={form.onSubmit((v) => save.mutate(v))}>
           <Stack gap="sm">
-            <TextInput label={t('common.code')} required disabled={codeLocked} {...form.getInputProps('code')} />
+            {editing === 'new' && type?.code === 'currency' && <TextInput label={t('common.code')} description={t('lookups.iso_note')} maxLength={3} required {...form.getInputProps('code')} onChange={(e) => form.setFieldValue('code', e.currentTarget.value.toUpperCase())} />}
             <Text size="sm" fw={600}>{t('lookups.labels')}</Text>
             {LANGS.map((l) => <TextInput key={l.code} label={l.label} required={l.code === 'en'} {...form.getInputProps(`labels.${l.code}`)} />)}
             <Group grow align="flex-start">

@@ -47,7 +47,7 @@ export function ClientsPage() {
       <Modal opened={!!editing} onClose={() => setEditing(null)} title={editing === 'new' ? t('clients.new') : t('clients.edit')} size="lg" centered>
         <form onSubmit={form.onSubmit((v) => save.mutate(v))}>
           <Stack gap="sm">
-            <Group grow><TextInput label={t('common.code')} required {...form.getInputProps('code')} /><TextInput label={t('common.name')} required {...form.getInputProps('name')} /></Group>
+            <Group grow><TextInput label={t('common.name')} required {...form.getInputProps('name')} /></Group>
             <Group grow><TextInput label={t('common.email')} {...form.getInputProps('email')} /><TextInput label={t('common.phone')} {...form.getInputProps('phone')} /></Group>
             <TextInput label={t('clients.tax')} {...form.getInputProps('tax_number')} />
             <Switch label={t('clients.portal')} description={t('clients.portal_note')} {...form.getInputProps('portal_enabled', { type: 'checkbox' })} />

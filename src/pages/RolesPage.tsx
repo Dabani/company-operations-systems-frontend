@@ -131,7 +131,6 @@ export function RolesPage() {
           <Stack gap="sm">
             <Group grow align="flex-start">
               <TextInput label={t('common.name')} required {...form.getInputProps('name')} />
-              <TextInput label={t('common.code')} required disabled={editing !== 'new' && (editing as RoleRow)?.is_system} {...form.getInputProps('code')} />
             </Group>
             <Group grow align="flex-start">
               <NumberInput label={t('roles.level')} min={1} max={me?.level ?? 100} required {...form.getInputProps('level')} />

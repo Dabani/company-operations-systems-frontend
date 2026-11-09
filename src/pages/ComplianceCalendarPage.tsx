@@ -109,7 +109,7 @@ export function ComplianceCalendarPage() {
       <Modal opened={!!editing} onClose={() => setEditing(null)} title={editing === 'new' ? t('cal.new') : t('cal.edit')} size="lg" centered>
         <form onSubmit={form.onSubmit((v) => save.mutate(v))}>
           <Stack gap="sm">
-            <Group grow align="flex-start"><TextInput label={t('common.code')} required {...form.getInputProps('code')} /><Select label={t('cal.frequency')} required data={freqs.options} {...form.getInputProps('frequency_id')} /></Group>
+            <Group grow align="flex-start"><Select label={t('cal.frequency')} required data={freqs.options} {...form.getInputProps('frequency_id')} /></Group>
             <TextInput label={t('case.subject')} required {...form.getInputProps('title')} />
             <Group grow align="flex-start"><TextInput type="date" label={t('cal.due')} required {...form.getInputProps('next_due_on')} /><TextInput label={t('cal.route')} placeholder="/archive/inventory" {...form.getInputProps('link_route')} /></Group>
             <Group grow align="flex-start">

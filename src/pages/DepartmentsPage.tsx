@@ -56,7 +56,6 @@ export function DepartmentsPage() {
         <form onSubmit={form.onSubmit((v) => save.mutate(v))}>
           <Stack gap="sm">
             <Group grow align="flex-start">
-              <TextInput label={t('common.code')} required {...form.getInputProps('code')} />
               <TextInput label={t('common.name')} required {...form.getInputProps('name')} />
             </Group>
             <Select label={t('common.parent')} clearable data={(all.data ?? []).filter((d) => editing === 'new' || d.id !== (editing as Dept)?.id).map((d) => ({ value: d.id, label: d.name }))} {...form.getInputProps('parent_id')} />

@@ -97,7 +97,7 @@ export function RulesPage() {
       <Modal opened={newSet} onClose={() => setNewSet(false)} title={t('rules.new_set')} centered>
         <form onSubmit={setForm.onSubmit((v) => createSet.mutate(v))}><Stack gap="sm">
           <Select label={t('rules.domain_label')} required data={domains.options} {...setForm.getInputProps('domain_id')} />
-          <Group grow><TextInput label={t('common.code')} required description="a-z 0-9 _ -" {...setForm.getInputProps('code')} /><TextInput label={t('common.name')} required {...setForm.getInputProps('name')} /></Group>
+          <Group grow><TextInput label={t('common.name')} required {...setForm.getInputProps('name')} /></Group>
           <RichTextField label={t('common.description')} minHeight={90} value={setForm.values.description} onChange={(v) => setForm.setFieldValue('description', v)} />
           <Switch label={t('rules.legal_profile')} description={t('rules.legal_profile_note')} {...setForm.getInputProps('is_legal_profile', { type: 'checkbox' })} />
           <Switch label={t('rules.full_coverage')} description={t('rules.full_coverage_note')} {...setForm.getInputProps('requires_full_coverage', { type: 'checkbox' })} />

@@ -60,7 +60,6 @@ export function LocationsPage() {
         <form onSubmit={form.onSubmit((v) => save.mutate(v))}>
           <Stack gap="sm">
             <Group grow align="flex-start">
-              <TextInput label={t('common.code')} required {...form.getInputProps('code')} />
               <TextInput label={t('common.name')} required {...form.getInputProps('name')} />
             </Group>
             <Group grow align="flex-start">

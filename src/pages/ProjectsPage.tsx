@@ -72,7 +72,7 @@ export function ProjectsPage() {
 
       <Modal opened={open} onClose={() => setOpen(false)} title={t('projects.new')} size="lg" centered>
         <form onSubmit={form.onSubmit((v) => create.mutate(v))}><Stack gap="sm">
-          <Group grow><TextInput label={t('common.code')} required description="A-Z 0-9 - _" {...form.getInputProps('code')} /><TextInput label={t('common.name')} required {...form.getInputProps('name')} /></Group>
+          <Group grow><TextInput label={t('common.name')} required {...form.getInputProps('name')} /></Group>
           <RichTextField label={t('common.description')} minHeight={100} value={form.values.description} onChange={(v) => form.setFieldValue('description', v)} />
           {can('client.view') && <Select label={t('projects.client')} clearable searchable data={(clients.data ?? []).map((c) => ({ value: c.id, label: c.name }))} {...form.getInputProps('client_id')} />}
           <Group grow><TextInput type="date" label={t('projects.start_date')} {...form.getInputProps('start_date')} /><TextInput type="date" label={t('projects.end_date')} {...form.getInputProps('end_date')} /></Group>

@@ -67,7 +67,7 @@ export function LegalReferencesPage() {
       <Modal opened={!!editing} onClose={() => setEditing(null)} title={editing === 'new' ? t('leg.new') : t('common.edit')} size="lg" centered>
         <form onSubmit={form.onSubmit((v) => save.mutate(v))}>
           <Stack gap="sm">
-            <Group grow align="flex-start"><TextInput label={t('leg.code')} required {...form.getInputProps('code')} /><Select label={t('common.status')} data={statuses.options} clearable {...form.getInputProps('status_id')} /></Group>
+            <Group grow align="flex-start"><Select label={t('common.status')} data={statuses.options} clearable {...form.getInputProps('status_id')} /></Group>
             <TextInput label={t('case.subject')} required {...form.getInputProps('title')} />
             <TextInput label={t('leg.citation')} {...form.getInputProps('citation')} />
             <Group grow align="flex-start"><TextInput label={t('leg.jurisdiction')} {...form.getInputProps('jurisdiction')} /><TextInput label={t('leg.topic')} {...form.getInputProps('topic')} /></Group>
