@@ -1,4 +1,4 @@
-import { Alert, Badge, Button, Group, Modal, NumberInput, Select, Stack, Switch, Table, Tabs, Text, TextInput, Textarea } from '@mantine/core';
+import { Alert, Badge, Button, Group, Modal, NumberInput, Select, Stack, Switch, Table, Tabs, Text, TextInput } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { IconPlus } from '@tabler/icons-react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { api } from '@/api/client';
 import { useAuth } from '@/auth/AuthContext';
+import { RichTextField } from '@/components/RichTextField';
 import { PageHeader } from '@/components/PageHeader';
 import { useLookup } from '@/lib/useLookup';
 import { toastError, toastOk } from '@/lib/ui';
@@ -97,7 +98,7 @@ export function RulesPage() {
         <form onSubmit={setForm.onSubmit((v) => createSet.mutate(v))}><Stack gap="sm">
           <Select label={t('rules.domain_label')} required data={domains.options} {...setForm.getInputProps('domain_id')} />
           <Group grow><TextInput label={t('common.code')} required description="a-z 0-9 _ -" {...setForm.getInputProps('code')} /><TextInput label={t('common.name')} required {...setForm.getInputProps('name')} /></Group>
-          <Textarea label={t('common.description')} autosize minRows={2} {...setForm.getInputProps('description')} />
+          <RichTextField label={t('common.description')} minHeight={90} value={setForm.values.description} onChange={(v) => setForm.setFieldValue('description', v)} />
           <Switch label={t('rules.legal_profile')} description={t('rules.legal_profile_note')} {...setForm.getInputProps('is_legal_profile', { type: 'checkbox' })} />
           <Switch label={t('rules.full_coverage')} description={t('rules.full_coverage_note')} {...setForm.getInputProps('requires_full_coverage', { type: 'checkbox' })} />
           <Group justify="flex-end"><Button variant="default" onClick={() => setNewSet(false)}>{t('common.cancel')}</Button><Button type="submit" loading={createSet.isPending}>{t('common.save')}</Button></Group>
@@ -113,7 +114,7 @@ export function RulesPage() {
           </Group>
           <Select label={t('rules.use_flow')} required data={(flows.data ?? []).filter((f) => f.is_active).map((f) => ({ value: f.id, label: `${f.name} (v${f.version})` }))} {...verForm.getInputProps('flow_id')} />
           <Group grow><TextInput type="date" label={t('rules.effective_from')} required {...verForm.getInputProps('effective_from')} /><NumberInput label={t('rules.priority')} min={0} {...verForm.getInputProps('priority')} /></Group>
-          <Textarea label={t('rules.rationale')} autosize minRows={2} {...verForm.getInputProps('rationale')} />
+          <RichTextField label={t('rules.rationale')} minHeight={90} value={verForm.values.rationale} onChange={(v) => verForm.setFieldValue('rationale', v)} />
           <Group justify="flex-end"><Button variant="default" onClick={() => setVersionFor(null)}>{t('common.cancel')}</Button><Button type="submit" loading={createVer.isPending}>{t('common.save')}</Button></Group>
         </Stack></form>
       </Modal>

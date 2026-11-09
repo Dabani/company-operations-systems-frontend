@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { api } from '@/api/client';
 import { useAuth } from '@/auth/AuthContext';
+import { CurrencySelect } from '@/components/CurrencySelect';
 import { PageHeader } from '@/components/PageHeader';
 import { useLookup } from '@/lib/useLookup';
 import { toastError, toastOk } from '@/lib/ui';
@@ -55,7 +56,7 @@ export function RateCardsPage() {
 
       <Modal opened={!!newCard} onClose={() => setNewCard(null)} title={t('rates.new_card')} centered>
         {newCard && <Stack><TextInput label={t('common.name')} value={newCard.name} onChange={(e) => setNewCard({ ...newCard, name: e.currentTarget.value })} />
-          <TextInput label={t('projects.currency')} maxLength={3} value={newCard.currency} onChange={(e) => setNewCard({ ...newCard, currency: e.currentTarget.value.toUpperCase() })} />
+          <CurrencySelect label={t('projects.currency')} value={newCard.currency} onChange={(v) => setNewCard({ ...newCard, currency: v })} />
           <Group justify="flex-end"><Button disabled={!newCard.name || newCard.currency.length !== 3} loading={createCard.isPending} onClick={() => createCard.mutate()}>{t('common.save')}</Button></Group></Stack>}
       </Modal>
       <Modal opened={!!line} onClose={() => setLine(null)} title={t('rates.add_line')} centered>

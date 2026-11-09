@@ -1,10 +1,12 @@
-import { Alert, Anchor, Badge, Button, Card, Divider, FileButton, Group, Progress, SimpleGrid, Stack, Text, Textarea, Title } from '@mantine/core';
+import { Alert, Anchor, Badge, Button, Card, Divider, FileButton, Group, Progress, SimpleGrid, Stack, Text, Title } from '@mantine/core';
 import { IconDownload, IconUpload } from '@tabler/icons-react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useParams } from 'react-router-dom';
 import { parseError } from '@/api/client';
+import { RichTextField } from '@/components/RichTextField';
+import { SafeHtml } from '@/components/SafeHtml';
 import { toastError, toastOk } from '@/lib/ui';
 import { papi, pdownload } from './portalApi';
 
@@ -56,7 +58,7 @@ export function PortalProjectPage() {
       <Anchor component={Link} to="/portal" size="sm">← {t('portal.your_projects')}</Anchor>
       <div><Group justify="space-between"><Title order={2}>{p.name}</Title><Badge size="lg" variant="light">{t(`projects.ps.${p.status}`, { defaultValue: p.status })}</Badge></Group>
         <Text size="sm" c="dimmed">{p.code}{p.start_date ? ` · ${p.start_date}` : ''}{p.end_date ? ` → ${p.end_date}` : ''}</Text>
-        {p.description && <Text mt="xs">{p.description}</Text>}</div>
+        <SafeHtml html={p.description} /></div>
 
       <Card withBorder><Text fw={600} mb="xs">{t('portal.progress')}</Text><Progress value={p.progress.percent} size="xl" radius="xl" /><Text size="sm" mt={4}>{p.progress.percent}% · {p.progress.done}/{p.progress.total}</Text></Card>
 
@@ -77,9 +79,9 @@ export function PortalProjectPage() {
 
       <Card withBorder><Text fw={600} mb="xs">{t('portal.messages')}</Text><Stack gap="sm">
         {p.comments.length === 0 && <Text size="sm" c="dimmed">{t('portal.no_messages')}</Text>}
-        {p.comments.map((c) => <div key={c.id}><Text size="xs" c="dimmed">{c.mine ? t('portal.you') : c.author ?? t('portal.team')} · {new Date(c.created_at).toLocaleString()}</Text><Text size="sm" style={{ whiteSpace: 'pre-wrap' }}>{c.body}</Text></div>)}
-        <Divider /><Textarea placeholder={t('portal.write_message')} autosize minRows={2} value={comment} onChange={(e) => setComment(e.currentTarget.value)} />
-        <Group justify="flex-end"><Button disabled={!comment.trim()} loading={send.isPending} onClick={() => send.mutate()}>{t('projects.send')}</Button></Group></Stack></Card>
+        {p.comments.map((c) => <div key={c.id}><Text size="xs" c="dimmed">{c.mine ? t('portal.you') : c.author ?? t('portal.team')} · {new Date(c.created_at).toLocaleString()}</Text><SafeHtml html={c.body} /></div>)}
+        <Divider /><RichTextField minHeight={90} value={comment} onChange={setComment} />
+        <Group justify="flex-end"><Button disabled={!comment.replace(/<[^>]*>/g, '').trim()} loading={send.isPending} onClick={() => send.mutate()}>{t('projects.send')}</Button></Group></Stack></Card>
     </Stack>
   );
 }

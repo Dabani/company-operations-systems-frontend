@@ -1,8 +1,10 @@
-import { Alert, Badge, Button, Group, Stack, Switch, Text, Textarea } from '@mantine/core';
+import { Alert, Badge, Button, Group, Stack, Switch, Text } from '@mantine/core';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { api } from '@/api/client';
+import { RichTextField } from '@/components/RichTextField';
+import { SafeHtml } from '@/components/SafeHtml';
 import { toastError, toastOk } from '@/lib/ui';
 import type { FileRow } from '@/types';
 
@@ -45,10 +47,10 @@ export function ProjectClientPanel({ projectId, isManager, canComment }: { proje
       <Stack gap="xs"><Text fw={600}>{t('cportal.conversation')}</Text>
         {c.comments.map((m) => <div key={m.id}><Group gap={6}><Text size="xs" c="dimmed">{m.author} · {new Date(m.created_at).toLocaleString()}</Text>
           {m.from_client ? <Badge size="xs" color="blue" variant="light">{t('cportal.from_client')}</Badge> : <Badge size="xs" color={m.is_client_visible ? 'green' : 'gray'} variant="light">{m.is_client_visible ? t('cportal.visible') : t('cportal.internal')}</Badge>}</Group>
-          <Text size="sm" style={{ whiteSpace: 'pre-wrap' }}>{m.body}</Text></div>)}
-        {canComment && <><Textarea autosize minRows={2} placeholder={t('portal.write_message')} value={body} onChange={(e) => setBody(e.currentTarget.value)} />
+          <SafeHtml html={m.body} /></div>)}
+        {canComment && <><RichTextField minHeight={90} value={body} onChange={setBody} />
           <Group justify="space-between"><Switch label={t('cportal.visible_to_client')} checked={visible} onChange={(e) => setVisible(e.currentTarget.checked)} />
-            <Button disabled={!body.trim()} loading={post.isPending} onClick={() => post.mutate()}>{t('projects.send')}</Button></Group></>}</Stack>
+            <Button disabled={!body.replace(/<[^>]*>/g, '').trim()} loading={post.isPending} onClick={() => post.mutate()}>{t('projects.send')}</Button></Group></>}</Stack>
     </Stack>
   );
 }

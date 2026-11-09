@@ -1,4 +1,4 @@
-import { ActionIcon, Alert, Badge, Button, Card, Divider, Drawer, Group, Menu, Modal, ScrollArea, Select, Stack, Tabs, Text, TextInput, Textarea, Timeline } from '@mantine/core';
+import { ActionIcon, Alert, Badge, Button, Card, Divider, Drawer, Group, Menu, Modal, ScrollArea, Select, Stack, Tabs, Text, TextInput, Timeline } from '@mantine/core';
 import { IconClock, IconDots, IconDownload, IconPaperclip, IconPlus, IconTrash } from '@tabler/icons-react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
@@ -8,6 +8,8 @@ import { api, downloadFile } from '@/api/client';
 import { UploadModal } from '@/components/UploadModal';
 import { ProjectBillingPanel } from '@/components/ProjectBillingPanel';
 import { ProjectClientPanel } from '@/components/ProjectClientPanel';
+import { RichTextField } from '@/components/RichTextField';
+import { SafeHtml } from '@/components/SafeHtml';
 import { PageHeader } from '@/components/PageHeader';
 import { useLookup } from '@/lib/useLookup';
 import { toastError, toastOk } from '@/lib/ui';
@@ -41,6 +43,7 @@ export function ProjectDetailPage() {
   const [milestoneName, setMilestoneName] = useState('');
   const [addMember, setAddMember] = useState<{ user_id: string | null; role: string | null } | null>(null);
   const [comment, setComment] = useState('');
+  const [desc, setDesc] = useState<{ id: string; html: string } | null>(null);
   const openTask = sp.get('task');
 
   const proj = useQuery({ queryKey: ['project', id], queryFn: async () => (await api.get<{ data: Project }>(`/projects/${id}`)).data.data });
@@ -88,7 +91,8 @@ export function ProjectDetailPage() {
 
   return (
     <>
-      <PageHeader title={`${p.code} · ${p.name}`} description={p.description ?? undefined} actions={<Badge variant="light">{t(`projects.ps.${p.status}`, { defaultValue: p.status })}</Badge>} />
+      <PageHeader title={`${p.code} · ${p.name}`} description={undefined} actions={<Badge variant="light">{t(`projects.ps.${p.status}`, { defaultValue: p.status })}</Badge>} />
+      <SafeHtml html={p.description} />
       <Tabs defaultValue="board">
         <Tabs.List mb="md"><Tabs.Tab value="board">{t('projects.board')}</Tabs.Tab><Tabs.Tab value="milestones">{t('projects.milestones')}</Tabs.Tab><Tabs.Tab value="members">{t('projects.members')}</Tabs.Tab><Tabs.Tab value="files">{t('files.attachments')}</Tabs.Tab><Tabs.Tab value="billing">{t('billing.title')}</Tabs.Tab><Tabs.Tab value="client">{t('cportal.tab')}</Tabs.Tab></Tabs.List>
 
@@ -133,14 +137,15 @@ export function ProjectDetailPage() {
           <Group gap="xs"><Badge variant="light">{t(`projects.s.${task.data.status}`)}</Badge>{task.data.status === 'in_review' && <Badge color="orange" variant="light">{t('projects.awaiting_review')}</Badge>}</Group>
           {task.data.can_edit ? <>
             <TextInput label={t('common.name')} defaultValue={task.data.title} onBlur={(e) => e.currentTarget.value !== task.data!.title && patch.mutate({ title: e.currentTarget.value })} />
-            <Textarea label={t('common.description')} autosize minRows={2} defaultValue={task.data.description ?? ''} onBlur={(e) => patch.mutate({ description: e.currentTarget.value })} />
+            <RichTextField label={t('common.description')} minHeight={90} value={desc?.id === task.data.id ? desc.html : (task.data.description ?? '')} onChange={(html) => setDesc({ id: task.data!.id, html })} />
+            {desc?.id === task.data.id && desc.html !== (task.data.description ?? '') && <Group justify="flex-end"><Button size="xs" variant="light" onClick={() => patch.mutate({ description: desc.html })}>{t('common.save')}</Button></Group>}
             <Group grow>
               <Select label={t('projects.assignee')} clearable data={memberOpts} value={task.data.assignee_id} onChange={(v) => patch.mutate({ assignee_id: v })} />
               <Select label={t('projects.priority')} data={priorities.options} value={task.data.priority_id} onChange={(v) => v && patch.mutate({ priority_id: v })} />
               <TextInput type="date" label={t('projects.due')} defaultValue={task.data.due_date ?? ''} onBlur={(e) => patch.mutate({ due_date: e.currentTarget.value || null })} />
             </Group>
             <Select label={t('projects.milestone')} clearable data={p.milestones.map((m) => ({ value: m.id, label: m.name }))} value={task.data.milestone_id} onChange={(v) => patch.mutate({ milestone_id: v })} />
-          </> : <Text size="sm">{task.data.description}</Text>}
+          </> : <SafeHtml html={task.data.description} />}
           {canEdit && <Button size="xs" variant="light" leftSection={<IconClock size={14} />} onClick={() => api.post('/timer/start', { project_id: id, task_id: task.data!.id, stop_existing: true }).then(() => { toastOk(t('time.started')); void qc.invalidateQueries({ queryKey: ['timer'] }); }).catch(toastError)}>{t('time.start_task')}</Button>}
           {task.data.allowed_moves.length > 0 && <Group gap="xs">{task.data.allowed_moves.map((to) => <Button key={to} size="xs" variant={to === 'in_review' ? 'filled' : 'light'} onClick={() => move.mutate({ id: task.data!.id, status: to })}>{to === 'in_review' ? t('projects.request_review') : t('projects.move_to', { status: t(`projects.s.${to}`) })}</Button>)}</Group>}
           {task.data.blocked_by.some((b) => !['done', 'cancelled'].includes(b.status)) && <Alert color="red" variant="light">{t('projects.blocked_note')}</Alert>}
@@ -153,9 +158,9 @@ export function ProjectDetailPage() {
           {taskFiles.data?.map((f) => <Group key={f.id} justify="space-between"><Text size="sm">{f.name}</Text>{f.can.download && <ActionIcon variant="subtle" onClick={() => downloadFile(f.id, f.name).catch(toastError)}><IconDownload size={16} /></ActionIcon>}</Group>)}
           {canEdit && <Button size="xs" w="fit-content" variant="light" leftSection={<IconPaperclip size={14} />} onClick={() => setUploading('task')}>{t('files.upload')}</Button>}
           <Divider label={t('projects.comments')} />
-          {task.data.comments.map((c) => <div key={c.id}><Text size="xs" c="dimmed">{c.user} · {new Date(c.created_at).toLocaleString()}</Text><Text size="sm" style={{ whiteSpace: 'pre-wrap' }}>{c.body}</Text></div>)}
-          {task.data.can_comment && <Group align="flex-end"><Textarea style={{ flex: 1 }} autosize minRows={1} placeholder={t('projects.write_comment')} value={comment} onChange={(e) => setComment(e.currentTarget.value)} />
-            <Button disabled={!comment.trim()} loading={addComment.isPending} onClick={() => addComment.mutate()}>{t('projects.send')}</Button></Group>}
+          {task.data.comments.map((c) => <div key={c.id}><Text size="xs" c="dimmed">{c.user} · {new Date(c.created_at).toLocaleString()}</Text><SafeHtml html={c.body} /></div>)}
+          {task.data.can_comment && <Stack gap="xs"><RichTextField minHeight={60} value={comment} onChange={setComment} />
+            <Group justify="flex-end"><Button disabled={!comment.replace(/<[^>]*>/g, '').trim()} loading={addComment.isPending} onClick={() => addComment.mutate()}>{t('projects.send')}</Button></Group></Stack>}
           <Divider label={t('projects.history')} />
           <Timeline bulletSize={12} lineWidth={2}>{task.data.history.map((h, i) => <Timeline.Item key={i} title={t(`projects.s.${h.to}`)}><Text size="xs" c="dimmed">{h.actor ?? t('projects.system')} · {new Date(h.at).toLocaleString()}{h.note ? ` · ${h.note}` : ''}</Text></Timeline.Item>)}</Timeline>
         </Stack>}

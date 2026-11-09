@@ -1,4 +1,4 @@
-import { Badge, Button, Group, Modal, NumberInput, Select, Stack, Table, Tabs, Text, TextInput, Textarea } from '@mantine/core';
+import { Badge, Button, Group, Modal, NumberInput, Select, Stack, Table, Tabs, Text, TextInput } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { IconPlus } from '@tabler/icons-react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -8,6 +8,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { api, parseError } from '@/api/client';
 import { useAuth } from '@/auth/AuthContext';
 import { DataList, type Column } from '@/components/DataList';
+import { CurrencySelect } from '@/components/CurrencySelect';
+import { RichTextField } from '@/components/RichTextField';
 import { PageHeader } from '@/components/PageHeader';
 import { useLookup } from '@/lib/useLookup';
 import { toastError, toastOk } from '@/lib/ui';
@@ -71,10 +73,10 @@ export function ProjectsPage() {
       <Modal opened={open} onClose={() => setOpen(false)} title={t('projects.new')} size="lg" centered>
         <form onSubmit={form.onSubmit((v) => create.mutate(v))}><Stack gap="sm">
           <Group grow><TextInput label={t('common.code')} required description="A-Z 0-9 - _" {...form.getInputProps('code')} /><TextInput label={t('common.name')} required {...form.getInputProps('name')} /></Group>
-          <Textarea label={t('common.description')} autosize minRows={2} {...form.getInputProps('description')} />
+          <RichTextField label={t('common.description')} minHeight={100} value={form.values.description} onChange={(v) => form.setFieldValue('description', v)} />
           {can('client.view') && <Select label={t('projects.client')} clearable searchable data={(clients.data ?? []).map((c) => ({ value: c.id, label: c.name }))} {...form.getInputProps('client_id')} />}
           <Group grow><TextInput type="date" label={t('projects.start_date')} {...form.getInputProps('start_date')} /><TextInput type="date" label={t('projects.end_date')} {...form.getInputProps('end_date')} /></Group>
-          <Group grow><NumberInput label={t('projects.budget')} thousandSeparator min={0} {...form.getInputProps('budget_amount')} /><TextInput label={t('projects.currency')} maxLength={3} {...form.getInputProps('currency_code')} /></Group>
+          <Group grow><NumberInput label={t('projects.budget')} thousandSeparator min={0} {...form.getInputProps('budget_amount')} /><CurrencySelect label={t('projects.currency')} {...form.getInputProps('currency_code')} /></Group>
           <Group justify="flex-end"><Button variant="default" onClick={() => setOpen(false)}>{t('common.cancel')}</Button><Button type="submit" loading={create.isPending}>{t('common.save')}</Button></Group>
         </Stack></form>
       </Modal>

@@ -1,4 +1,4 @@
-import { ActionIcon, Alert, Badge, Button, Group, Modal, Select, Stack, Switch, Table, Tabs, Text, TextInput, Textarea } from '@mantine/core';
+import { ActionIcon, Alert, Badge, Button, Group, Modal, Select, Stack, Switch, Table, Tabs, Text, TextInput } from '@mantine/core';
 import { IconChevronLeft, IconChevronRight, IconPlus, IconTrash } from '@tabler/icons-react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
@@ -92,7 +92,7 @@ export function TimePage() {
           <Select label={t('time.project')} searchable data={(projects.data ?? []).map((p) => ({ value: p.id, label: `${p.code} · ${p.name}` }))} value={add.project} onChange={(v) => setAdd({ ...add, project: v, task: null })} />
           <Select label={t('time.task_optional')} clearable searchable disabled={!add.project} data={(tasks.data ?? []).map((x) => ({ value: x.id, label: `${x.key} · ${x.title}` }))} value={add.task} onChange={(v) => setAdd({ ...add, task: v })} />
           <Group grow><TextInput type="datetime-local" label={t('time.from')} value={add.start} onChange={(e) => setAdd({ ...add, start: e.currentTarget.value })} /><TextInput type="datetime-local" label={t('time.to')} value={add.end} onChange={(e) => setAdd({ ...add, end: e.currentTarget.value })} /></Group>
-          <Textarea label={t('time.reason')} description={t('time.reason_note')} autosize minRows={2} value={add.reason} onChange={(e) => setAdd({ ...add, reason: e.currentTarget.value })} />
+          <TextInput label={t('time.reason')} description={t('time.reason_note')} value={add.reason} onChange={(e) => setAdd({ ...add, reason: e.currentTarget.value })} />
           <Switch label={t('time.billable')} checked={add.billable} onChange={(e) => setAdd({ ...add, billable: e.currentTarget.checked })} />
           <Group justify="flex-end"><Button variant="default" onClick={() => setAdd(null)}>{t('common.cancel')}</Button><Button disabled={!add.project || !add.start || !add.end || add.reason.trim().length < 5} loading={save.isPending} onClick={() => save.mutate()}>{t('common.save')}</Button></Group>
         </Stack>}
@@ -100,7 +100,7 @@ export function TimePage() {
       <Modal opened={!!adjust} onClose={() => setAdjust(null)} title={t('time.adjust')} centered>
         {adjust && <Stack gap="sm"><Text size="sm" c="dimmed">{t('time.adjust_note')}</Text>
           <TextInput label={t('time.adjust_minutes')} description={t('time.adjust_minutes_note')} value={adjust.minutes} onChange={(e) => setAdjust({ ...adjust, minutes: e.currentTarget.value })} />
-          <Textarea label={t('time.reason')} autosize minRows={2} value={adjust.reason} onChange={(e) => setAdjust({ ...adjust, reason: e.currentTarget.value })} />
+          <TextInput label={t('time.reason')} value={adjust.reason} onChange={(e) => setAdjust({ ...adjust, reason: e.currentTarget.value })} />
           <Group justify="flex-end"><Button disabled={!Number(adjust.minutes) || adjust.reason.trim().length < 5} loading={doAdjust.isPending} onClick={() => doAdjust.mutate()}>{t('common.save')}</Button></Group></Stack>}
       </Modal>
     </>

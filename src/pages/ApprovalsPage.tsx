@@ -1,4 +1,4 @@
-import { Alert, Badge, Button, Card, Drawer, Group, Modal, Stack, Tabs, Text, Textarea, Timeline } from '@mantine/core';
+import { Alert, Badge, Button, Card, Drawer, Group, Modal, Stack, Tabs, Text, TextInput, Timeline } from '@mantine/core';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -87,7 +87,7 @@ export function ApprovalsPage() {
 
       <Modal opened={!!deciding} onClose={() => setDeciding(null)} title={deciding ? `${t(`approvals.${deciding.decision}`)} — ${deciding.r.title}` : ''} centered>
         <Stack>
-          <Textarea label={t('approvals.comment')} description={deciding?.decision === 'approve' ? t('common.optional') : t('approvals.comment_required')} minRows={3} autosize value={comment} onChange={(e) => setComment(e.currentTarget.value)} />
+          <TextInput label={t('approvals.comment')} description={deciding?.decision === 'approve' ? t('common.optional') : t('approvals.comment_required')} value={comment} onChange={(e) => setComment(e.currentTarget.value)} />
           <Group justify="flex-end"><Button variant="default" onClick={() => setDeciding(null)}>{t('common.cancel')}</Button>
             <Button loading={decide.isPending} color={deciding?.decision === 'reject' ? 'red' : deciding?.decision === 'return' ? 'yellow' : 'green'} onClick={() => decide.mutate()}>{t('approvals.decide')}</Button></Group>
         </Stack>

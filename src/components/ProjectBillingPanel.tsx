@@ -1,10 +1,11 @@
-import { Alert, Badge, Button, Group, Modal, NumberInput, Select, Stack, Text, TextInput, Textarea } from '@mantine/core';
+import { Alert, Badge, Button, Group, Modal, NumberInput, Select, Stack, Text, TextInput } from '@mantine/core';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { api } from '@/api/client';
 import { useAuth } from '@/auth/AuthContext';
+import { CurrencySelect } from '@/components/CurrencySelect';
 import { useLookup } from '@/lib/useLookup';
 import { toastError, toastOk } from '@/lib/ui';
 import { STATUS_COLOR, money, type InvoiceRow } from '@/pages/InvoicesPage';
@@ -57,12 +58,12 @@ export function ProjectBillingPanel({ projectId, isManager, projectStatus }: { p
 
       <Modal opened={closing !== null} onClose={() => setClosing(null)} title={t('billing.close_project')} centered>
         <Stack><Text size="sm">{t('billing.close_help')}</Text>
-          {can('billing.close_exception') && <Textarea label={t('billing.exception_reason')} description={t('billing.exception_note')} autosize minRows={2} value={closing ?? ''} onChange={(e) => setClosing(e.currentTarget.value)} />}
+          {can('billing.close_exception') && <TextInput label={t('billing.exception_reason')} description={t('billing.exception_note')} value={closing ?? ''} onChange={(e) => setClosing(e.currentTarget.value)} />}
           <Group justify="flex-end"><Button color="red" loading={close.isPending} onClick={() => close.mutate()}>{t('billing.close_project')}</Button></Group></Stack>
       </Modal>
       <Modal opened={!!form} onClose={() => setForm(null)} title={t('billing.setup')} centered>
         {form && <Stack><Select label={t('billing.model')} data={models.options} value={form.model} onChange={(v) => setForm({ ...form, model: v })} />
-          <Group grow><TextInput label={t('projects.currency')} maxLength={3} value={form.currency} onChange={(e) => setForm({ ...form, currency: e.currentTarget.value.toUpperCase() })} />
+          <Group grow><CurrencySelect label={t('projects.currency')} value={form.currency} onChange={(v) => setForm({ ...form, currency: v })} />
             <NumberInput label={t('billing.fixed_amount')} thousandSeparator decimalScale={2} min={0} value={form.budget} onChange={(v) => setForm({ ...form, budget: v })} /></Group>
           <Text size="xs" c="dimmed">{t('billing.setup_note')}</Text>
           <Group justify="flex-end"><Button disabled={!form.model} loading={save.isPending} onClick={() => save.mutate()}>{t('common.save')}</Button></Group></Stack>}

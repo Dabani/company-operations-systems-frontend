@@ -1,10 +1,11 @@
-import { Alert, Badge, Button, Card, Group, Modal, NumberInput, Select, Stack, Switch, Table, Text, TextInput, Textarea } from '@mantine/core';
+import { Alert, Badge, Button, Card, Group, Modal, NumberInput, Select, Stack, Switch, Table, Text, TextInput } from '@mantine/core';
 import { IconDownload, IconPlus, IconTrash } from '@tabler/icons-react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useParams } from 'react-router-dom';
 import { api, downloadBlob } from '@/api/client';
+import { RichTextField } from '@/components/RichTextField';
 import { PageHeader } from '@/components/PageHeader';
 import { useLookup } from '@/lib/useLookup';
 import { toastError, toastOk } from '@/lib/ui';
@@ -26,6 +27,7 @@ export function InvoiceDetailPage() {
   const [line, setLine] = useState<{ description: string; quantity: number | string; unit_price: number | string } | null>(null);
   const [pay, setPay] = useState<{ amount: number | string; paid_on: string; method_id: string | null; reference: string } | null>(null);
   const [credit, setCredit] = useState<{ amount: number | string; reason: string } | null>(null);
+  const [notes, setNotes] = useState<string | null>(null);
   const [reverse, setReverse] = useState<{ id: string; reason: string } | null>(null);
 
   const q = useQuery({ queryKey: ['invoice', id], queryFn: async () => (await api.get<{ data: Inv }>(`/invoices/${id}`)).data.data });
@@ -36,6 +38,7 @@ export function InvoiceDetailPage() {
 
   if (!q.data) return null;
   const i = q.data;
+  if (notes === null) setTimeout(() => setNotes(i.notes ?? ''), 0);
   const draft = i.status === 'draft';
 
   return (
@@ -67,7 +70,8 @@ export function InvoiceDetailPage() {
             <NumberInput label={t('billing.terms_days')} min={0} max={365} defaultValue={i.payment_terms_days} onBlur={(e) => run.mutate({ method: 'patch', path: `/invoices/${i.id}`, body: { payment_terms_days: Number(e.currentTarget.value) } })} />
           </Group>
           <Switch label={t('billing.tax_exempt')} checked={i.tax_exempt} onChange={(e) => run.mutate({ method: 'patch', path: `/invoices/${i.id}`, body: { tax_exempt: e.currentTarget.checked } })} />
-          <Textarea label={t('billing.notes')} autosize minRows={2} defaultValue={i.notes ?? ''} onBlur={(e) => run.mutate({ method: 'patch', path: `/invoices/${i.id}`, body: { notes: e.currentTarget.value } })} />
+          <RichTextField label={t('billing.notes')} minHeight={90} value={notes ?? ''} onChange={setNotes} />
+          <Group justify="flex-end"><Button size="xs" variant="light" disabled={notes === null || notes === (i.notes ?? '')} onClick={() => run.mutate({ method: 'patch', path: `/invoices/${i.id}`, body: { notes } })}>{t('billing.save_notes')}</Button></Group>
           <Group justify="flex-end">
             <Button variant="default" color="red" onClick={() => run.mutate({ method: 'post', path: `/invoices/${i.id}/cancel` })}>{t('billing.cancel_draft')}</Button>
             {i.can.issue && <Button loading={run.isPending} onClick={() => run.mutate({ method: 'post', path: `/invoices/${i.id}/issue` })}>{t('billing.submit_issue')}</Button>}
@@ -94,11 +98,11 @@ export function InvoiceDetailPage() {
       </Modal>
       <Modal opened={!!credit} onClose={() => setCredit(null)} title={t('billing.credit_note')} centered>
         {credit && <Stack><Text size="sm" c="dimmed">{t('billing.credit_note_help')}</Text><NumberInput label={t('billing.credit_amount')} min={0.01} decimalScale={2} thousandSeparator value={credit.amount} onChange={(v) => setCredit({ ...credit, amount: v })} />
-          <Textarea label={t('time.reason')} autosize minRows={2} value={credit.reason} onChange={(e) => setCredit({ ...credit, reason: e.currentTarget.value })} />
+          <TextInput label={t('time.reason')} value={credit.reason} onChange={(e) => setCredit({ ...credit, reason: e.currentTarget.value })} />
           <Group justify="flex-end"><Button disabled={!credit.amount || credit.reason.trim().length < 5} loading={run.isPending} onClick={() => run.mutate({ method: 'post', path: `/invoices/${i.id}/credit-notes`, body: credit })}>{t('billing.request_credit')}</Button></Group></Stack>}
       </Modal>
       <Modal opened={!!reverse} onClose={() => setReverse(null)} title={t('billing.reverse')} centered>
-        {reverse && <Stack><Textarea label={t('time.reason')} autosize minRows={2} value={reverse.reason} onChange={(e) => setReverse({ ...reverse, reason: e.currentTarget.value })} />
+        {reverse && <Stack><TextInput label={t('time.reason')} value={reverse.reason} onChange={(e) => setReverse({ ...reverse, reason: e.currentTarget.value })} />
           <Group justify="flex-end"><Button color="red" disabled={reverse.reason.trim().length < 5} loading={run.isPending} onClick={() => run.mutate({ method: 'post', path: `/invoices/${i.id}/payments/${reverse.id}/reverse`, body: { reason: reverse.reason } })}>{t('billing.reverse')}</Button></Group></Stack>}
       </Modal>
     </>
