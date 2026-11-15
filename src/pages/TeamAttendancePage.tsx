@@ -1,4 +1,4 @@
-import { Alert, Badge, Button, Drawer, Group, Modal, SegmentedControl, Stack, Table, Tabs, Text, Textarea, TextInput } from '@mantine/core';
+import { Alert, Badge, Button, Drawer, Group, Modal, SegmentedControl, Stack, Table, Tabs, Text, TextInput } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { IconLock, IconLockOpen, IconRefresh } from '@tabler/icons-react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -13,6 +13,8 @@ import { PageHeader } from '@/components/PageHeader';
 import { STATUS_COLOR, currentMonth, fmtMinutes, fmtTime, shiftMonth, weekday } from '@/lib/attendance';
 import { toastError, toastOk } from '@/lib/ui';
 import type { DayRow } from './ClockPage';
+import { RichTextField } from '@/components/RichTextField';
+import { plainText } from '@/lib/richText';
 
 interface SummaryRow { employee_id: string; employee: string; employee_number: string; present: number; late: number; absent: number; holiday: number; leave: number; day_off: number; incomplete: number;
   expected_minutes: number; worked_minutes: number; late_minutes: number; overtime_minutes: number }
@@ -93,7 +95,7 @@ export function TeamAttendancePage() {
               {(corrections.data ?? []).map((c) => (
                 <Table.Tr key={c.id}>
                   <Table.Td>{c.employee}</Table.Td><Table.Td>{c.work_date}</Table.Td><Table.Td>{fmtTime(c.in_at, c.timezone, lang)} – {fmtTime(c.out_at, c.timezone, lang)}</Table.Td>
-                  <Table.Td visibleFrom="md"><Text size="xs" c="dimmed" lineClamp={2}>{c.reason}</Text></Table.Td>
+                  <Table.Td visibleFrom="md"><Text size="xs" c="dimmed" lineClamp={2}>{plainText(c.reason)}</Text></Table.Td>
                   <Table.Td><Badge color={CORR_COLOR[c.status]} variant="light">{t(`hr.status.${c.status}`)}</Badge></Table.Td>
                   <Table.Td>{c.mine && c.status === 'pending_approval' && <Button size="compact-xs" color="red" variant="subtle" onClick={() => cancel.mutate(c.id)}>{t('approvals.cancel')}</Button>}</Table.Td>
                 </Table.Tr>
@@ -123,8 +125,8 @@ export function TeamAttendancePage() {
       <Modal opened={reopen} onClose={() => setReopen(false)} centered title={t('att.reopen_month')}>
         <form onSubmit={reopenForm.onSubmit((v) => doReopen.mutate(v))}><Stack gap="sm">
           <Alert color="red" variant="light">{t('att.reopen_warning')}</Alert>
-          <Textarea label={t('att.reason')} required minLength={5} autosize minRows={2} {...reopenForm.getInputProps('reason')} />
-          <Group justify="flex-end"><Button variant="default" onClick={() => setReopen(false)}>{t('common.cancel')}</Button><Button color="red" type="submit" loading={doReopen.isPending}>{t('att.reopen_month')}</Button></Group>
+          <RichTextField label={t('att.reason')} required minHeight={80} {...reopenForm.getInputProps('reason')} />
+          <Group justify="flex-end"><Button variant="default" onClick={() => setReopen(false)}>{t('common.cancel')}</Button><Button color="red" type="submit" disabled={plainText(reopenForm.values.reason).length < 5} loading={doReopen.isPending}>{t('att.reopen_month')}</Button></Group>
         </Stack></form>
       </Modal>
       <CorrectionModal target={correct} onClose={() => setCorrect(null)} />

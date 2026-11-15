@@ -2,14 +2,15 @@ import { Input } from '@mantine/core';
 import { RichTextEditor } from '@mantine/tiptap';
 import { useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
-import { useEffect } from 'react';
+import { useEffect, type ReactNode } from 'react';
+import { toEditorHtml } from '@/lib/richText';
 import '@mantine/tiptap/styles.css';
 
 interface Props {
   label?: string;
-  value: string;
+  value?: string | null;
   onChange: (html: string) => void;
-  error?: string;
+  error?: ReactNode;
   description?: string;
   minHeight?: number;
   required?: boolean;
@@ -17,19 +18,21 @@ interface Props {
 
 /**
  * The ONLY multi-line text input used in forms (replaces <Textarea/> everywhere).
+ * Works directly with Mantine forms: <RichTextField label=".." {...form.getInputProps('field')} />
  * Stores sanitised-by-schema HTML. Never render the stored value with dangerouslySetInnerHTML
  * unless it has been purified server-side (added with the comments module in Bundle 2).
  */
-export function RichTextField({ label, value, onChange, error, description, minHeight = 120, required }: Props) {
+export function RichTextField({ label, value = '', onChange, error, description, minHeight = 120, required }: Props) {
   const editor = useEditor({
     extensions: [StarterKit],      // v3 StarterKit already includes link & underline
-    content: value,
+    content: toEditorHtml(value ?? ''),
     onUpdate: ({ editor: e }) => onChange(e.isEmpty ? '' : e.getHTML()),
   });
 
   // Reset content when the form is re-opened with another record.
   useEffect(() => {
-    if (editor && value !== (editor.isEmpty ? '' : editor.getHTML())) editor.commands.setContent(value || '', { emitUpdate: false });
+    const cur = value ?? '';
+    if (editor && cur !== (editor.isEmpty ? '' : editor.getHTML())) editor.commands.setContent(toEditorHtml(cur), { emitUpdate: false });
   }, [value, editor]);
 
   return (

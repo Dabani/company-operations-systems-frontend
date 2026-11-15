@@ -1,4 +1,4 @@
-import { Alert, Badge, Button, Group, Modal, NumberInput, Select, Stack, Table, Text, TextInput, Textarea } from '@mantine/core';
+import { Alert, Badge, Button, Group, Modal, NumberInput, Select, Stack, Table, Text, TextInput } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { IconPlus } from '@tabler/icons-react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -10,6 +10,8 @@ import { useAuth } from '@/auth/AuthContext';
 import { PageHeader } from '@/components/PageHeader';
 import { toastError, toastOk } from '@/lib/ui';
 import type { Paginated } from '@/types';
+import { RichTextField } from '@/components/RichTextField';
+import { plainText } from '@/lib/richText';
 
 interface Req { id: string; code: string; title: string; department: string | null; headcount: number; justification: string; needed_by: string | null; status: string; requested_by: string | null; vacancy_id: string | null }
 export const REQ_COLOR: Record<string, string> = { pending_approval: 'orange', approved: 'green', rejected: 'red', cancelled: 'gray', filled: 'teal' };
@@ -43,7 +45,7 @@ export function RequisitionsPage() {
           {(q.data ?? []).map((r) => (
             <Table.Tr key={r.id}>
               <Table.Td><Badge variant="outline">{r.code}</Badge></Table.Td>
-              <Table.Td><Text size="sm" fw={600}>{r.title}</Text><Text size="xs" c="dimmed" lineClamp={1}>{r.requested_by} · {r.justification}</Text></Table.Td>
+              <Table.Td><Text size="sm" fw={600}>{r.title}</Text><Text size="xs" c="dimmed" lineClamp={1}>{r.requested_by} · {plainText(r.justification)}</Text></Table.Td>
               <Table.Td visibleFrom="sm">{r.department ?? '—'}</Table.Td><Table.Td>{r.headcount}</Table.Td>
               <Table.Td><Badge color={REQ_COLOR[r.status]} variant="light">{t(`rec.req_status.${r.status}`)}</Badge></Table.Td>
               <Table.Td><Group gap={4} wrap="nowrap" justify="flex-end">
@@ -60,14 +62,14 @@ export function RequisitionsPage() {
         <form onSubmit={form.onSubmit((v) => create.mutate(v))}><Stack gap="sm">
           <Group grow align="flex-start"><TextInput label={t('rec.job_title')} required {...form.getInputProps('title')} /><Select label={t('employees.department')} required searchable data={(depts.data ?? []).map((d) => ({ value: d.id, label: d.name }))} {...form.getInputProps('department_id')} /></Group>
           <Group grow align="flex-start"><NumberInput label={t('rec.headcount')} min={1} max={500} required {...form.getInputProps('headcount')} /><TextInput type="date" label={t('rec.needed_by')} {...form.getInputProps('needed_by')} /></Group>
-          <Textarea label={t('rec.justification')} description={t('rec.justification_hint')} required autosize minRows={3} maxLength={5000} {...form.getInputProps('justification')} />
+          <RichTextField label={t('rec.justification')} description={t('rec.justification_hint')} required minHeight={100} {...form.getInputProps('justification')} />
           <Group justify="flex-end"><Button variant="default" onClick={() => setModal(false)}>{t('common.cancel')}</Button><Button type="submit" loading={create.isPending}>{t('rec.submit_requisition')}</Button></Group>
         </Stack></form>
       </Modal>
       <Modal opened={!!vac} onClose={() => setVac(null)} title={`${t('rec.open_vacancy')} — ${vac?.code ?? ''}`} centered size="lg">
         <form onSubmit={vform.onSubmit((v) => open.mutate(v))}><Stack gap="sm">
           <TextInput label={t('rec.job_title')} {...vform.getInputProps('title')} />
-          <Textarea label={t('rec.vacancy_description')} autosize minRows={4} maxLength={10000} {...vform.getInputProps('description')} />
+          <RichTextField label={t('rec.vacancy_description')} minHeight={120} {...vform.getInputProps('description')} />
           <TextInput type="date" label={t('rec.closes_on')} {...vform.getInputProps('closes_on')} />
           <Group justify="flex-end"><Button variant="default" onClick={() => setVac(null)}>{t('common.cancel')}</Button><Button type="submit" loading={open.isPending}>{t('rec.open_vacancy')}</Button></Group>
         </Stack></form>

@@ -1,4 +1,4 @@
-import { Alert, Badge, Button, Card, Drawer, Group, Modal, MultiSelect, NumberInput, Select, SimpleGrid, Stack, Tabs, Text, TextInput, Textarea, Timeline } from '@mantine/core';
+import { Alert, Badge, Button, Card, Drawer, Group, Modal, MultiSelect, NumberInput, Select, SimpleGrid, Stack, Tabs, Text, TextInput, Timeline } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { IconDownload, IconUserCheck } from '@tabler/icons-react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -11,6 +11,9 @@ import { CurrencySelect } from '@/components/CurrencySelect';
 import { useLookup } from '@/lib/useLookup';
 import { toastError, toastOk } from '@/lib/ui';
 import type { Paginated } from '@/types';
+import { RichTextField } from '@/components/RichTextField';
+import { SafeHtml } from '@/components/SafeHtml';
+import { plainText } from '@/lib/richText';
 
 export const STAGE_COLOR: Record<string, string> = { applied: 'gray', screened: 'blue', interview: 'blue', assessment: 'violet', offer: 'orange', hired: 'green', rejected: 'red' };
 export const OFFER_COLOR: Record<string, string> = { draft: 'gray', issued: 'blue', accepted: 'green', declined: 'red', withdrawn: 'gray' };
@@ -65,8 +68,8 @@ export function ApplicantDrawer({ id, onClose }: { id: string | null; onClose: (
               <Text size="sm"><b>{t('rec.source')}:</b> {a.source ?? '—'}</Text><Text size="sm"><b>{t('rec.applied_on')}:</b> {a.applied_on}</Text>
               <Text size="sm"><b>{t('rec.consent')}:</b> {a.consent_recorded_at?.slice(0, 10) ?? '—'}</Text><Text size="sm"><b>{t('rec.retention_until')}:</b> {a.retention_until ?? '—'}</Text>
             </SimpleGrid>
-            {a.notes && <Text size="sm" style={{ whiteSpace: 'pre-wrap' }}>{a.notes}</Text>}
-            {a.rejection_reason && <Alert color="red" variant="light">{a.rejection_reason}</Alert>}
+            {a.notes && <SafeHtml html={a.notes} />}
+            {a.rejection_reason && <Alert color="red" variant="light"><SafeHtml html={a.rejection_reason} /></Alert>}
             {!a.anonymized && !locked && (
               <Card withBorder padding="sm"><Stack gap="xs">
                 <Group align="flex-end" gap="xs"><Select label={t('rec.move_to')} data={MANUAL.map((s) => ({ value: s, label: t(`rec.stage.${s}`) }))} value={stage} onChange={setStage} style={{ flex: 1 }} />
@@ -96,15 +99,15 @@ export function ApplicantDrawer({ id, onClose }: { id: string | null; onClose: (
 
       <Modal opened={rejectOpen} onClose={() => setRejectOpen(false)} title={t('rec.reject')} centered>
         <form onSubmit={rejectForm.onSubmit((v) => reject.mutate(v))}><Stack gap="sm">
-          <Textarea label={t('rec.reject_reason')} required autosize minRows={3} maxLength={1000} {...rejectForm.getInputProps('reason')} />
-          <Group justify="flex-end"><Button variant="default" onClick={() => setRejectOpen(false)}>{t('common.cancel')}</Button><Button color="red" type="submit" loading={reject.isPending}>{t('rec.reject')}</Button></Group>
+          <RichTextField label={t('rec.reject_reason')} required minHeight={100} {...rejectForm.getInputProps('reason')} />
+          <Group justify="flex-end"><Button variant="default" onClick={() => setRejectOpen(false)}>{t('common.cancel')}</Button><Button color="red" type="submit" disabled={!plainText(rejectForm.values.reason)} loading={reject.isPending}>{t('rec.reject')}</Button></Group>
         </Stack></form>
       </Modal>
       <Modal opened={extendOpen} onClose={() => setExtendOpen(false)} title={t('rec.extend_retention')} centered>
         <form onSubmit={extForm.onSubmit((v) => extend.mutate(v))}><Stack gap="sm">
           <TextInput type="date" label={t('rec.keep_until')} required {...extForm.getInputProps('until')} />
-          <Textarea label={t('rec.extend_reason')} required autosize minRows={2} maxLength={1000} {...extForm.getInputProps('reason')} />
-          <Group justify="flex-end"><Button variant="default" onClick={() => setExtendOpen(false)}>{t('common.cancel')}</Button><Button type="submit" loading={extend.isPending}>{t('common.save')}</Button></Group>
+          <RichTextField label={t('rec.extend_reason')} required minHeight={80} {...extForm.getInputProps('reason')} />
+          <Group justify="flex-end"><Button variant="default" onClick={() => setExtendOpen(false)}>{t('common.cancel')}</Button><Button type="submit" disabled={!plainText(extForm.values.reason) || !extForm.values.until} loading={extend.isPending}>{t('common.save')}</Button></Group>
         </Stack></form>
       </Modal>
       <ConfirmModal opened={anon} onClose={() => setAnon(false)} onConfirm={() => anonymize.mutate(undefined as never)} loading={anonymize.isPending} title={t('rec.anonymise')} text={t('rec.anonymise_confirm')} />
@@ -148,7 +151,7 @@ function ReferencesTab({ a, onDone }: { a: Detail; onDone: () => void }) {
   return (
     <Stack gap="md">
       {a.references.map((r) => (
-        <Card key={r.id} withBorder padding="sm"><Group justify="space-between" align="flex-start"><div><Text size="sm" fw={600}>{r.referee_name}</Text><Text size="xs" c="dimmed">{[r.relationship, r.referee_contact].filter(Boolean).join(' · ')}</Text>{r.notes && <Text size="xs">{r.notes}</Text>}</div>
+        <Card key={r.id} withBorder padding="sm"><Group justify="space-between" align="flex-start"><div><Text size="sm" fw={600}>{r.referee_name}</Text><Text size="xs" c="dimmed">{[r.relationship, r.referee_contact].filter(Boolean).join(' · ')}</Text>{r.notes && <SafeHtml html={r.notes} />}</div>
           <Select size="xs" w={150} allowDeselect={false} data={results} value={r.result} onChange={(v) => v && upd.mutate({ id: r.id, result: v })} /></Group></Card>
       ))}
       {!a.references.length && <Text size="sm" c="dimmed">{t('rec.no_references')}</Text>}
@@ -156,7 +159,7 @@ function ReferencesTab({ a, onDone }: { a: Detail; onDone: () => void }) {
         <form onSubmit={form.onSubmit((v) => add.mutate(v))}><Stack gap="sm"><Text fw={600} size="sm">{t('rec.add_reference')}</Text>
           <Group grow align="flex-start"><TextInput label={t('rec.referee')} required {...form.getInputProps('referee_name')} /><TextInput label={t('rec.referee_contact')} {...form.getInputProps('referee_contact')} /></Group>
           <Group grow align="flex-start"><TextInput label={t('rec.relationship')} {...form.getInputProps('relationship')} /><Select label={t('rec.ref_result')} allowDeselect={false} data={results} {...form.getInputProps('result')} /><TextInput type="date" label={t('rec.checked_on')} {...form.getInputProps('checked_on')} /></Group>
-          <Textarea label={t('rec.notes')} autosize minRows={2} {...form.getInputProps('notes')} />
+          <RichTextField label={t('rec.notes')} minHeight={80} {...form.getInputProps('notes')} />
           <Group justify="flex-end"><Button type="submit" loading={add.isPending}>{t('common.save')}</Button></Group>
         </Stack></form>
       )}
@@ -225,8 +228,8 @@ function OfferTab({ a, onDone, onAnswer, can }: { a: Detail; onDone: () => void;
           <Group grow align="flex-start"><TextInput type="date" label={t('rec.start_date')} required {...form.getInputProps('start_date')} /><NumberInput label={t('rec.probation_months')} min={0} max={24} {...form.getInputProps('probation_months')} /><TextInput type="date" label={t('hr.contract_end')} {...form.getInputProps('contract_end_on')} /></Group>
           <Group grow align="flex-start"><NumberInput label={t('hr.salary')} required min={0} thousandSeparator="," {...form.getInputProps('salary_amount')} /><CurrencySelect required label={t('hr.currency')} value={form.values.salary_currency} onChange={(v) => form.setFieldValue('salary_currency', v)} error={form.errors.salary_currency as string | undefined} />
             <Select label={t('rec.period_label')} allowDeselect={false} data={['monthly', 'annual'].map((x) => ({ value: x, label: t(`rec.period.${x}`) }))} {...form.getInputProps('salary_period')} /></Group>
-          <Textarea label={t('rec.terms')} autosize minRows={2} maxLength={10000} {...form.getInputProps('terms')} />
-          <Textarea label={t('rec.band_exception')} description={t('rec.band_exception_hint')} autosize minRows={2} maxLength={1000} {...form.getInputProps('band_exception_reason')} />
+          <RichTextField label={t('rec.terms')} minHeight={80} {...form.getInputProps('terms')} />
+          <RichTextField label={t('rec.band_exception')} description={t('rec.band_exception_hint')} minHeight={80} {...form.getInputProps('band_exception_reason')} />
           <Group justify="flex-end"><Button type="submit" loading={create.isPending}>{t('rec.create_offer')}</Button></Group>
         </Stack></form>
       )}

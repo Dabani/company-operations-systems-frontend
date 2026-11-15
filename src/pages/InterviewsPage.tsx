@@ -1,4 +1,4 @@
-import { Badge, Button, Group, Modal, Select, Stack, Table, Text, Textarea } from '@mantine/core';
+import { Badge, Button, Group, Modal, Select, Stack, Table, Text } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
@@ -7,6 +7,8 @@ import { api, parseError } from '@/api/client';
 import { useAuth } from '@/auth/AuthContext';
 import { PageHeader } from '@/components/PageHeader';
 import { toastError, toastOk } from '@/lib/ui';
+import { RichTextField } from '@/components/RichTextField';
+import { SafeHtml } from '@/components/SafeHtml';
 
 interface Interview {
   id: string; applicant: string; vacancy: string | null; type: string; status: string; scheduled_at: string; location: string | null; notes: string | null;
@@ -61,8 +63,8 @@ export function InterviewsPage() {
             <Select label={t('rec.score_label')} required data={[1, 2, 3, 4, 5].map((n) => ({ value: String(n), label: `${n} — ${t(`rec.score_${n}`)}` }))} {...form.getInputProps('score')} />
             <Select label={t('hr.recommendation')} required data={REC.map((r) => ({ value: r, label: t(`rec.rec.${r}`) }))} {...form.getInputProps('recommendation')} />
           </Group>
-          <Textarea label={t('rec.strengths')} autosize minRows={2} maxLength={3000} {...form.getInputProps('strengths')} />
-          <Textarea label={t('rec.concerns')} autosize minRows={2} maxLength={3000} {...form.getInputProps('concerns')} />
+          <RichTextField label={t('rec.strengths')} minHeight={80} {...form.getInputProps('strengths')} />
+          <RichTextField label={t('rec.concerns')} minHeight={80} {...form.getInputProps('concerns')} />
           <Group justify="flex-end"><Button variant="default" onClick={() => setScoring(null)}>{t('common.cancel')}</Button><Button type="submit" loading={submit.isPending}>{t('rec.submit_scorecard')}</Button></Group>
         </Stack></form>
       </Modal>
@@ -76,7 +78,7 @@ export function InterviewsPage() {
             {(detail.data.scorecards ?? []).map((s, i) => (
               <Stack key={i} gap={2} p="xs" style={{ border: '1px solid var(--mantine-color-default-border)', borderRadius: 8 }}>
                 <Group justify="space-between"><Text size="sm" fw={600}>{s.panelist}</Text><Group gap={6}><Badge variant="light">{s.score} / 5</Badge><Badge color={REC_COLOR[s.recommendation]} variant="light">{t(`rec.rec.${s.recommendation}`)}</Badge></Group></Group>
-                {s.strengths && <Text size="xs"><b>{t('rec.strengths')}:</b> {s.strengths}</Text>}{s.concerns && <Text size="xs"><b>{t('rec.concerns')}:</b> {s.concerns}</Text>}
+                {s.strengths && <><Text size="xs" fw={700}>{t('rec.strengths')}</Text><SafeHtml html={s.strengths} /></>}{s.concerns && <><Text size="xs" fw={700}>{t('rec.concerns')}</Text><SafeHtml html={s.concerns} /></>}
               </Stack>
             ))}
             {detail.data.scorecards?.length === 0 && <Text size="sm" c="dimmed">{t('rec.no_scorecards')}</Text>}

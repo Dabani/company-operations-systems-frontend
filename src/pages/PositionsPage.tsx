@@ -1,4 +1,4 @@
-import { Badge, Button, Group, Modal, NumberInput, Select, Stack, Switch, Table, Tabs, Text, TextInput, Textarea } from '@mantine/core';
+import { Badge, Button, Group, Modal, NumberInput, Select, Stack, Switch, Table, Tabs, Text, TextInput } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { IconEdit, IconPlus, IconTrash } from '@tabler/icons-react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -13,6 +13,7 @@ import { RowIconButton } from '@/components/DataList';
 import { useLookup } from '@/lib/useLookup';
 import { toastError, toastOk } from '@/lib/ui';
 import type { Paginated } from '@/types';
+import { RichTextField } from '@/components/RichTextField';
 
 interface Grade { id: string; code: string; name: string; level: number; is_active: boolean; salary_min?: string | null; salary_max?: string | null; currency_code?: string | null }
 interface Position { id: string; code: string; title: string; department_id: string | null; department: string | null; grade_id: string | null; grade: string | null; description: string | null; is_active: boolean }
@@ -95,7 +96,7 @@ export function PositionsPage() {
         <form onSubmit={posForm.onSubmit((v) => savePos.mutate(v))}><Stack gap="sm">
           <TextInput label={t('hr.position')} required {...posForm.getInputProps('title')} />
           <Group grow><Select label={t('employees.department')} clearable data={(depts.data ?? []).map((d) => ({ value: d.id, label: d.name }))} {...posForm.getInputProps('department_id')} /><Select label={t('hr.grade')} clearable data={gradeOpts} {...posForm.getInputProps('grade_id')} /></Group>
-          <Textarea label={t('common.description')} autosize minRows={2} {...posForm.getInputProps('description')} />
+          <RichTextField label={t('common.description')} minHeight={80} {...posForm.getInputProps('description')} />
           <Switch label={t('common.active')} {...posForm.getInputProps('is_active', { type: 'checkbox' })} />
           <Group justify="flex-end"><Button variant="default" onClick={() => setPosModal(null)}>{t('common.cancel')}</Button><Button type="submit" loading={savePos.isPending}>{t('common.save')}</Button></Group>
         </Stack></form>
@@ -114,7 +115,7 @@ export function PositionsPage() {
           <Group grow><Select label={t('hr.from_grade')} required data={gradeOpts} {...critForm.getInputProps('from_grade_id')} /><Select label={t('hr.to_grade')} required data={gradeOpts} {...critForm.getInputProps('to_grade_id')} /></Group>
           <Group grow align="flex-start"><NumberInput label={t('hr.min_months')} min={0} max={600} required {...critForm.getInputProps('min_months_in_grade')} />
             <Select label={t('hr.min_rating')} clearable data={ratings.items.map((i) => ({ value: String(i.sort_order), label: `${i.sort_order} — ${i.label}` }))} {...critForm.getInputProps('min_rating_level')} /></Group>
-          <Textarea label={t('common.description')} autosize minRows={2} {...critForm.getInputProps('notes')} />
+          <RichTextField label={t('common.description')} minHeight={80} {...critForm.getInputProps('notes')} />
           <Group justify="flex-end"><Button variant="default" onClick={() => setCritModal(false)}>{t('common.cancel')}</Button><Button type="submit" loading={saveCrit.isPending}>{t('common.save')}</Button></Group>
         </Stack></form>
       </Modal>

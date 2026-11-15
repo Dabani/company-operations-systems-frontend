@@ -1,4 +1,4 @@
-import { Badge, Button, Group, Modal, NumberInput, Select, Stack, Switch, Table, Tabs, Text, TextInput, Textarea } from '@mantine/core';
+import { Badge, Button, Group, Modal, NumberInput, Select, Stack, Switch, Table, Tabs, Text, TextInput } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { IconPlus, IconTrash, IconUserPlus } from '@tabler/icons-react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -10,6 +10,7 @@ import { ConfirmModal } from '@/components/ConfirmModal';
 import { PageHeader } from '@/components/PageHeader';
 import { RowIconButton } from '@/components/DataList';
 import { toastError, toastOk } from '@/lib/ui';
+import { RichTextField } from '@/components/RichTextField';
 
 interface Vac { id: string; code: string; title: string; status: string; opened_on: string; closes_on: string | null; requisition_code: string | null; headcount: number | null; applicants: number; hired: number }
 interface App { id: string; code: string; name: string; email: string; stage: string; vacancy: string | null; applied_on: string; retention_until: string | null; anonymized: boolean }
@@ -120,7 +121,7 @@ export function RecruitmentPage() {
           <Group grow align="flex-start"><TextInput label={t('rec.first_name')} required {...form.getInputProps('first_name')} /><TextInput label={t('rec.last_name')} required {...form.getInputProps('last_name')} /></Group>
           <Group grow align="flex-start"><TextInput type="email" label={t('rec.email')} required {...form.getInputProps('email')} /><TextInput label={t('rec.phone')} {...form.getInputProps('phone')} /></Group>
           <TextInput label={t('rec.source')} {...form.getInputProps('source')} />
-          <Textarea label={t('rec.notes')} autosize minRows={2} {...form.getInputProps('notes')} />
+          <RichTextField label={t('rec.notes')} minHeight={80} {...form.getInputProps('notes')} />
           <Switch label={t('rec.consent_label')} {...form.getInputProps('consent', { type: 'checkbox' })} />
           <Group justify="flex-end"><Button variant="default" onClick={() => setAdding(null)}>{t('common.cancel')}</Button><Button type="submit" loading={add.isPending}>{t('common.save')}</Button></Group>
         </Stack></form>

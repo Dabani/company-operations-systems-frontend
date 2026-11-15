@@ -1,4 +1,4 @@
-import { Alert, Badge, Button, Group, Modal, Select, Stack, Text, Textarea } from '@mantine/core';
+import { Alert, Badge, Button, Group, Modal, Select, Stack, Text } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
@@ -6,6 +6,8 @@ import { useTranslation } from 'react-i18next';
 import { api, parseError } from '@/api/client';
 import { useLookup } from '@/lib/useLookup';
 import { toastError, toastOk } from '@/lib/ui';
+import { RichTextField } from '@/components/RichTextField';
+import { SafeHtml } from '@/components/SafeHtml';
 
 export interface Review {
   id: string; cycle: string | null; employee: string | null; reviewer: string | null; status: string; rating: string | null; rating_level: number | null; recommendation: string | null;
@@ -43,8 +45,8 @@ export function ReviewModal({ id, onClose }: { id: string | null; onClose: () =>
                   <Select label={t('hr.rating')} required clearable data={ratings.items.map((i) => ({ value: i.code, label: `${i.sort_order} — ${i.label}` }))} {...form.getInputProps('rating')} />
                   <Select label={t('hr.recommendation')} clearable data={recs.items.map((i) => ({ value: i.code, label: i.label }))} {...form.getInputProps('recommendation')} />
                 </Group>
-                <Textarea label={t('hr.summary')} autosize minRows={3} maxLength={5000} {...form.getInputProps('summary')} />
-                <Textarea label={t('hr.goals')} autosize minRows={3} maxLength={5000} {...form.getInputProps('goals')} />
+                <RichTextField label={t('hr.summary')} minHeight={100} {...form.getInputProps('summary')} />
+                <RichTextField label={t('hr.goals')} minHeight={100} {...form.getInputProps('goals')} />
                 <Alert variant="light" color="blue">{t('hr.review_submit_note')}</Alert>
                 <Group justify="flex-end"><Button type="submit" variant="default" loading={save.isPending}>{t('hr.save_draft')}</Button><Button loading={submit.isPending} onClick={() => submit.mutate()}>{t('hr.submit_review')}</Button></Group>
               </Stack>
@@ -53,14 +55,14 @@ export function ReviewModal({ id, onClose }: { id: string | null; onClose: () =>
             <Stack gap="xs">
               <Text size="sm"><b>{t('hr.rating')}:</b> {r.rating ? `${r.rating_level} — ${label(ratings.items, r.rating)}` : '—'}</Text>
               <Text size="sm"><b>{t('hr.recommendation')}:</b> {label(recs.items, r.recommendation)}</Text>
-              <Text size="sm" fw={600}>{t('hr.summary')}</Text><Text size="sm" style={{ whiteSpace: 'pre-wrap' }}>{r.summary || '—'}</Text>
-              <Text size="sm" fw={600}>{t('hr.goals')}</Text><Text size="sm" style={{ whiteSpace: 'pre-wrap' }}>{r.goals || '—'}</Text>
-              {r.employee_comment && <><Text size="sm" fw={600}>{t('hr.employee_comment')}</Text><Text size="sm" style={{ whiteSpace: 'pre-wrap' }}>{r.employee_comment}</Text></>}
+              <Text size="sm" fw={600}>{t('hr.summary')}</Text>{r.summary ? <SafeHtml html={r.summary} /> : <Text size="sm">—</Text>}
+              <Text size="sm" fw={600}>{t('hr.goals')}</Text>{r.goals ? <SafeHtml html={r.goals} /> : <Text size="sm">—</Text>}
+              {r.employee_comment && <><Text size="sm" fw={600}>{t('hr.employee_comment')}</Text><SafeHtml html={r.employee_comment} /></>}
             </Stack>
           )}
           {r.can_acknowledge && (
             <Stack gap="sm">
-              <Textarea label={t('hr.employee_comment')} autosize minRows={2} maxLength={3000} {...form.getInputProps('employee_comment')} />
+              <RichTextField label={t('hr.employee_comment')} minHeight={80} {...form.getInputProps('employee_comment')} />
               <Group justify="flex-end"><Button loading={ack.isPending} onClick={() => ack.mutate()}>{t('hr.acknowledge')}</Button></Group>
             </Stack>
           )}

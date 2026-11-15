@@ -1,6 +1,7 @@
 import DOMPurify from 'dompurify';
 import { Box } from '@mantine/core';
 import { useMemo } from 'react';
+import { isHtml } from '@/lib/richText';
 
 // Open links safely in a new tab.
 DOMPurify.addHook('afterSanitizeAttributes', (node) => {
@@ -14,5 +15,7 @@ DOMPurify.addHook('afterSanitizeAttributes', (node) => {
 export function SafeHtml({ html }: { html?: string | null }) {
   const clean = useMemo(() => DOMPurify.sanitize(html ?? '', { USE_PROFILES: { html: true } }), [html]);
   if (!clean) return null;
+  // Older records hold plain text: keep their line breaks.
+  if (!isHtml(html)) return <Box className="rich-content" fz="sm" style={{ whiteSpace: 'pre-wrap' }}>{html}</Box>;
   return <Box className="rich-content" fz="sm" dangerouslySetInnerHTML={{ __html: clean }} />;
 }

@@ -1,4 +1,4 @@
-import { Alert, Badge, Button, Card, Drawer, Group, NumberInput, Select, SimpleGrid, Stack, Tabs, Text, Textarea, TextInput, Timeline } from '@mantine/core';
+import { Alert, Badge, Button, Card, Drawer, Group, NumberInput, Select, SimpleGrid, Stack, Tabs, Text, TextInput, Timeline } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { IconCircleCheck, IconClockHour4, IconX } from '@tabler/icons-react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -10,6 +10,8 @@ import { OnboardingChecklist } from '@/components/OnboardingChecklist';
 import { useLookup } from '@/lib/useLookup';
 import { toastError, toastOk } from '@/lib/ui';
 import type { Paginated } from '@/types';
+import { RichTextField } from '@/components/RichTextField';
+import { SafeHtml } from '@/components/SafeHtml';
 
 export interface HistoryRow {
   id: string; change_type: string; status: string; effective_from: string; valid_to: string | null; category: string | null; category_id: string;
@@ -33,7 +35,7 @@ export function HistoryTimeline({ rows }: { rows: HistoryRow[] }) {
           <Text size="sm" mt={4}>{[cats.byId(r.category_id)?.label, r.position, r.grade, r.department].filter(Boolean).join(' · ')}</Text>
           {(r.probation_end_on || r.contract_end_on) && <Text size="xs" c="dimmed">{r.probation_end_on ? `${t('hr.probation_end')}: ${r.probation_end_on} ` : ''}{r.contract_end_on ? `${t('hr.contract_end')}: ${r.contract_end_on}` : ''}</Text>}
           {r.salary_amount != null && <Text size="sm" fw={500}>{t('hr.salary')}: {Number(r.salary_amount).toLocaleString()} {r.salary_currency}</Text>}
-          {r.reason && <Text size="xs" c="dimmed" mt={2} style={{ whiteSpace: 'pre-wrap' }}>{r.reason}</Text>}
+          {r.reason && <SafeHtml html={r.reason} />}
         </Timeline.Item>
       ))}
     </Timeline>
@@ -109,7 +111,7 @@ function ChangeForm({ employee, onDone }: { employee: { id: string }; onDone: ()
         {type === 'transfer' && <Select label={t('employees.department')} required clearable data={opt(depts.data)} {...form.getInputProps('department_id')} />}
         {type === 'manager_change' && <Select label={t('employees.manager')} required searchable clearable data={(emps.data ?? []).filter((x) => x.id !== employee.id).map((x) => ({ value: x.id, label: x.full_name }))} {...form.getInputProps('manager_employee_id')} />}
         {type === 'salary_change' && <Group grow align="flex-start"><NumberInput label={t('hr.salary')} required min={0} thousandSeparator="," {...form.getInputProps('salary_amount')} /><CurrencySelect required label={t('hr.currency')} value={form.values.salary_currency} onChange={(v) => form.setFieldValue('salary_currency', v)} error={form.errors.salary_currency as string | undefined} /></Group>}
-        <Textarea label={t('hr.reason')} autosize minRows={2} maxLength={2000} {...form.getInputProps('reason')} />
+        <RichTextField label={t('hr.reason')} minHeight={80} {...form.getInputProps('reason')} />
         <Group justify="flex-end"><Button type="submit" loading={save.isPending}>{t('hr.record_change')}</Button></Group>
       </Stack>
     </form>

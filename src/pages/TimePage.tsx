@@ -10,6 +10,8 @@ import { fmt } from '@/components/TimerWidget';
 import { PageHeader } from '@/components/PageHeader';
 import { toastError, toastOk } from '@/lib/ui';
 import type { Paginated } from '@/types';
+import { RichTextField } from '@/components/RichTextField';
+import { plainText } from '@/lib/richText';
 
 interface Entry { id: string; project: string; project_id: string; task: string | null; work_date: string; started_at: string; ended_at: string | null; duration_seconds: number; is_manual: boolean; manual_reason: string | null;
   is_billable: boolean; description: string | null; status: string; adjusts_entry_id: string | null; auto_stopped: boolean; editable: boolean }
@@ -92,16 +94,16 @@ export function TimePage() {
           <Select label={t('time.project')} searchable data={(projects.data ?? []).map((p) => ({ value: p.id, label: `${p.code} · ${p.name}` }))} value={add.project} onChange={(v) => setAdd({ ...add, project: v, task: null })} />
           <Select label={t('time.task_optional')} clearable searchable disabled={!add.project} data={(tasks.data ?? []).map((x) => ({ value: x.id, label: `${x.key} · ${x.title}` }))} value={add.task} onChange={(v) => setAdd({ ...add, task: v })} />
           <Group grow><TextInput type="datetime-local" label={t('time.from')} value={add.start} onChange={(e) => setAdd({ ...add, start: e.currentTarget.value })} /><TextInput type="datetime-local" label={t('time.to')} value={add.end} onChange={(e) => setAdd({ ...add, end: e.currentTarget.value })} /></Group>
-          <TextInput label={t('time.reason')} description={t('time.reason_note')} value={add.reason} onChange={(e) => setAdd({ ...add, reason: e.currentTarget.value })} />
+          <RichTextField label={t('time.reason')} description={t('time.reason_note')} required minHeight={80} value={add.reason} onChange={(v) => setAdd((cur) => (cur ? { ...cur, reason: v } : cur))} />
           <Switch label={t('time.billable')} checked={add.billable} onChange={(e) => setAdd({ ...add, billable: e.currentTarget.checked })} />
-          <Group justify="flex-end"><Button variant="default" onClick={() => setAdd(null)}>{t('common.cancel')}</Button><Button disabled={!add.project || !add.start || !add.end || add.reason.trim().length < 5} loading={save.isPending} onClick={() => save.mutate()}>{t('common.save')}</Button></Group>
+          <Group justify="flex-end"><Button variant="default" onClick={() => setAdd(null)}>{t('common.cancel')}</Button><Button disabled={!add.project || !add.start || !add.end || plainText(add.reason).length < 5} loading={save.isPending} onClick={() => save.mutate()}>{t('common.save')}</Button></Group>
         </Stack>}
       </Modal>
       <Modal opened={!!adjust} onClose={() => setAdjust(null)} title={t('time.adjust')} centered>
         {adjust && <Stack gap="sm"><Text size="sm" c="dimmed">{t('time.adjust_note')}</Text>
           <TextInput label={t('time.adjust_minutes')} description={t('time.adjust_minutes_note')} value={adjust.minutes} onChange={(e) => setAdjust({ ...adjust, minutes: e.currentTarget.value })} />
-          <TextInput label={t('time.reason')} value={adjust.reason} onChange={(e) => setAdjust({ ...adjust, reason: e.currentTarget.value })} />
-          <Group justify="flex-end"><Button disabled={!Number(adjust.minutes) || adjust.reason.trim().length < 5} loading={doAdjust.isPending} onClick={() => doAdjust.mutate()}>{t('common.save')}</Button></Group></Stack>}
+          <RichTextField label={t('time.reason')} required minHeight={80} value={adjust.reason} onChange={(v) => setAdjust((cur) => (cur ? { ...cur, reason: v } : cur))} />
+          <Group justify="flex-end"><Button disabled={!Number(adjust.minutes) || plainText(adjust.reason).length < 5} loading={doAdjust.isPending} onClick={() => doAdjust.mutate()}>{t('common.save')}</Button></Group></Stack>}
       </Modal>
     </>
   );

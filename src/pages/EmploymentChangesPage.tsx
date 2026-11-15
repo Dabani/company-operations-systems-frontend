@@ -7,6 +7,7 @@ import { api } from '@/api/client';
 import { useAuth } from '@/auth/AuthContext';
 import { PageHeader } from '@/components/PageHeader';
 import { toastError, toastOk } from '@/lib/ui';
+import { plainText } from '@/lib/richText';
 
 interface Row { id: string; employee: string | null; change_type: string; status: string; effective_from: string; reason: string | null; created_by: string | null; salary_amount?: string | null; salary_currency?: string | null }
 const COLOR: Record<string, string> = { effective: 'green', pending_approval: 'orange', rejected: 'red', cancelled: 'gray' };
@@ -31,7 +32,7 @@ export function EmploymentChangesPage() {
             <Table.Tr key={r.id}>
               <Table.Td><Text size="sm" fw={600}>{r.employee}</Text></Table.Td><Table.Td>{t(`hr.type.${r.change_type}`)}{r.salary_amount != null ? ` — ${Number(r.salary_amount).toLocaleString()} ${r.salary_currency ?? ''}` : ''}</Table.Td>
               <Table.Td>{r.effective_from}</Table.Td><Table.Td><Badge color={COLOR[r.status]} variant="light">{t(`hr.status.${r.status}`)}</Badge></Table.Td>
-              <Table.Td visibleFrom="md"><Text size="xs" c="dimmed" lineClamp={2}>{r.reason ?? ''}</Text></Table.Td>
+              <Table.Td visibleFrom="md"><Text size="xs" c="dimmed" lineClamp={2}>{plainText(r.reason)}</Text></Table.Td>
               <Table.Td>{r.status === 'pending_approval' && r.created_by === me?.id && <Button size="compact-xs" color="red" variant="subtle" loading={cancel.isPending} onClick={() => cancel.mutate(r.id)}>{t('approvals.cancel')}</Button>}</Table.Td>
             </Table.Tr>
           ))}

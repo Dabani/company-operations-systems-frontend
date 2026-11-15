@@ -1,4 +1,4 @@
-import { Alert, Button, Group, Modal, Stack, Textarea, TextInput } from '@mantine/core';
+import { Alert, Button, Group, Modal, Stack, TextInput } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
@@ -6,6 +6,8 @@ import { useTranslation } from 'react-i18next';
 import { api, parseError } from '@/api/client';
 import { toApiDateTime, toInputValue } from '@/lib/attendance';
 import { toastError, toastOk } from '@/lib/ui';
+import { RichTextField } from '@/components/RichTextField';
+import { plainText } from '@/lib/richText';
 
 export interface CorrectionTarget { employeeId?: string; employeeName?: string; date: string; firstIn?: string | null; lastOut?: string | null; timezone: string }
 
@@ -31,8 +33,8 @@ export function CorrectionModal({ target, onClose }: { target: CorrectionTarget 
           <TextInput type="datetime-local" label={t('att.real_in')} required {...form.getInputProps('in_at')} />
           <TextInput type="datetime-local" label={t('att.real_out')} required {...form.getInputProps('out_at')} />
         </Group>
-        <Textarea label={t('att.reason')} required minLength={3} maxLength={2000} autosize minRows={2} {...form.getInputProps('reason')} />
-        <Group justify="flex-end"><Button variant="default" onClick={onClose}>{t('common.cancel')}</Button><Button type="submit" loading={save.isPending}>{t('att.send_correction')}</Button></Group>
+        <RichTextField label={t('att.reason')} required minHeight={80} {...form.getInputProps('reason')} />
+        <Group justify="flex-end"><Button variant="default" onClick={onClose}>{t('common.cancel')}</Button><Button type="submit" disabled={plainText(form.values.reason).length < 3} loading={save.isPending}>{t('att.send_correction')}</Button></Group>
       </Stack></form>
     </Modal>
   );

@@ -1,7 +1,25 @@
-import { defineConfig, loadEnv } from 'vite';
+import { defineConfig, loadEnv, type Plugin } from 'vite';
 import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
 import path from 'node:path';
+import { readFileSync } from 'node:fs';
+import { sliceLanguage, type LangCode } from './src/i18n/slice';
+
+/** Serves `bundleNN.ts?lang=xx` / `patchNN.ts?lang=xx` as a flat dictionary of that one language (see src/i18n/index.ts). */
+function i18nLanguageSlices(): Plugin {
+  return {
+    name: 'i18n-language-slices',
+    enforce: 'pre',
+    load(id) {
+      const m = /^(.*[\\/](?:bundle|patch)\d+[a-z]*\.ts)\?(?:.*&)?lang=(en|fr|rw|sw)(?:&|$)/.exec(id);
+      if (!m) return null;
+      const slice = sliceLanguage(readFileSync(m[1], 'utf8'), m[2] as LangCode);
+      if (slice === null) this.error(`i18n: no "${m[2]}" block found in ${m[1]}`);
+      this.addWatchFile(m[1]);
+      return `export default ${slice};`;
+    },
+  };
+}
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
@@ -31,6 +49,7 @@ export default defineConfig(({ mode }) => {
       } } },
     },
     plugins: [
+      i18nLanguageSlices(),
       react(),
       VitePWA({
         registerType: 'autoUpdate',
