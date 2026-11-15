@@ -1,12 +1,13 @@
 import { Badge, Button, Group, Modal, Select, Stack, Text, TextInput } from '@mantine/core';
 import { useForm } from '@mantine/form';
-import { IconEdit, IconEye, IconPlus } from '@tabler/icons-react';
+import { IconEdit, IconEye, IconPlus, IconTimeline } from '@tabler/icons-react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { api, parseError } from '@/api/client';
 import { useAuth } from '@/auth/AuthContext';
 import { DataList, RowIconButton, type Column } from '@/components/DataList';
+import { EmploymentDrawer } from '@/components/EmploymentDrawer';
 import { PageHeader } from '@/components/PageHeader';
 import { useLookup } from '@/lib/useLookup';
 import { toastError, toastOk } from '@/lib/ui';
@@ -22,6 +23,7 @@ export function EmployeesPage() {
   const qc = useQueryClient();
   const cats = useLookup('employee_category');
   const [editing, setEditing] = useState<Emp | 'new' | null>(null);
+  const [history, setHistory] = useState<Emp | null>(null);
   const [secret, setSecret] = useState<{ national_id: string | null; bank_account: string | null } | null>(null);
   const form = useForm({ initialValues: blank });
   const depts = useQuery({ queryKey: ['dept-options'], queryFn: async () => (await api.get<Paginated<{ id: string; name: string }>>('/departments', { params: { per_page: 100 } })).data.data });
@@ -52,23 +54,25 @@ export function EmployeesPage() {
         toolbar={manage ? <Button leftSection={<IconPlus size={16} />} onClick={() => open('new')}>{t('employees.new')}</Button> : undefined}
         rowActions={(e) => <>
           {manage && <RowIconButton label={t('common.edit')} onClick={() => open(e)}><IconEdit size={18} /></RowIconButton>}
+          {(can('hr.history.view') || can('hr.history.manage')) && <RowIconButton label={t('hr.employment')} onClick={() => setHistory(e)}><IconTimeline size={18} /></RowIconButton>}
           {can('employee.view_sensitive') && <RowIconButton label={t('employees.reveal')} onClick={() => reveal.mutate(e)}><IconEye size={18} /></RowIconButton>}
         </>} />
 
       <Modal opened={!!editing} onClose={() => setEditing(null)} title={editing === 'new' ? t('employees.new') : t('employees.edit')} size="lg" centered>
         <form onSubmit={form.onSubmit((v) => save.mutate(v))}>
           <Stack gap="sm">
-            <Group grow><Select label={t('employees.category')} required data={cats.options} {...form.getInputProps('category_id')} /></Group>
+            <Group grow><Select label={t('employees.category')} required disabled={editing !== 'new'} description={editing !== 'new' ? t('hr.use_change_hint') : undefined} data={cats.options} {...form.getInputProps('category_id')} /></Group>
             <Group grow><TextInput label={t('employees.first_name')} required {...form.getInputProps('first_name')} /><TextInput label={t('employees.last_name')} required {...form.getInputProps('last_name')} /></Group>
             <Group grow><TextInput label={t('common.email')} {...form.getInputProps('email')} /><TextInput label={t('common.phone')} {...form.getInputProps('phone')} /></Group>
-            <Group grow><Select label={t('employees.department')} clearable data={(depts.data ?? []).map((d) => ({ value: d.id, label: d.name }))} {...form.getInputProps('department_id')} />
-              <Select label={t('employees.manager')} clearable searchable data={(emps.data ?? []).filter((x) => editing === 'new' || x.id !== (editing as Emp)?.id).map((x) => ({ value: x.id, label: x.full_name }))} {...form.getInputProps('manager_employee_id')} /></Group>
+            <Group grow><Select label={t('employees.department')} clearable disabled={editing !== 'new'} data={(depts.data ?? []).map((d) => ({ value: d.id, label: d.name }))} {...form.getInputProps('department_id')} />
+              <Select label={t('employees.manager')} clearable searchable disabled={editing !== 'new'} data={(emps.data ?? []).filter((x) => editing === 'new' || x.id !== (editing as Emp)?.id).map((x) => ({ value: x.id, label: x.full_name }))} {...form.getInputProps('manager_employee_id')} /></Group>
             <Group grow><TextInput label={t('employees.position')} {...form.getInputProps('position_title')} /><TextInput type="date" label={t('employees.hired_on')} {...form.getInputProps('hired_on')} /></Group>
             {can('employee.manage_sensitive') && <Group grow><TextInput label={t('employees.national_id')} description={t('employees.sensitive_note')} autoComplete="off" {...form.getInputProps('national_id')} /><TextInput label={t('employees.bank_account')} autoComplete="off" {...form.getInputProps('bank_account')} /></Group>}
             <Group justify="flex-end"><Button variant="default" onClick={() => setEditing(null)}>{t('common.cancel')}</Button><Button type="submit" loading={save.isPending}>{t('common.save')}</Button></Group>
           </Stack>
         </form>
       </Modal>
+      <EmploymentDrawer employee={history} onClose={() => setHistory(null)} />
       <Modal opened={!!secret} onClose={() => setSecret(null)} title={t('employees.sensitive')} centered>
         <Stack gap="xs"><Text size="sm" c="dimmed">{t('employees.audited_note')}</Text>
           <Text size="sm"><b>{t('employees.national_id')}:</b> {secret?.national_id ?? '—'}</Text><Text size="sm"><b>{t('employees.bank_account')}:</b> {secret?.bank_account ?? '—'}</Text></Stack>

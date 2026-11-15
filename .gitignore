@@ -47,3 +47,6 @@ pnpm-debug.log*
 Thumbs.db
 desktop.ini
 *.zip
+
+.bundle-*-backup/
+.patch-*-backup/

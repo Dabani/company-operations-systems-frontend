@@ -15,4 +15,8 @@ const MAP: Record<string, Icon> = {
 
 Object.assign(MAP, { IconLayoutKanban: IconLayoutKanbanPolish, IconClock: IconClockPolish, IconCoin: IconCoinPolish, IconFileInvoice: IconFileInvoicePolish, IconPercentage: IconPercentagePolish, IconRoute: IconRoutePolish, IconUsersGroup: IconUsersGroupPolish, IconBuildingStore: IconBuildingStorePolish, IconWorld: IconWorldPolish, IconChecklist: IconChecklistPolish, IconScale: IconScalePolish });
 
+// Bundle 14 menu icons
+import { IconTimeline, IconStars, IconUser, IconClipboardList, IconUserSearch, IconClockHour4, IconCalendarStats, IconAdjustmentsHorizontal, IconFileImport } from '@tabler/icons-react';
+Object.assign(MAP, { IconTimeline, IconStars, IconUser, IconClipboardList, IconUserSearch, IconClockHour4, IconCalendarStats, IconAdjustmentsHorizontal, IconFileImport });
+
 export const iconFor = (name?: string | null): Icon => (name && MAP[name]) || IconCircle;

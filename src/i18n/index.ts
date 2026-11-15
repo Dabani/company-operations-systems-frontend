@@ -1,18 +1,6 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
-import en from './en';
-import fr from './fr';
-import rw from './rw';
-import sw from './sw';
-import b7 from './bundle7';
-import p7a from './patch07a';
-import b8 from './bundle08';
-import b9 from './bundle09';
-import b10 from './bundle10';
-import b11 from './bundle11';
-import b12 from './bundle12';
-import b12b from './bundle12b';
-import b13 from './bundle13';
+import { bundleOrder } from './slice';
 
 export const LANGS = [
   { code: 'en', label: 'English' },
@@ -21,18 +9,61 @@ export const LANGS = [
   { code: 'sw', label: 'Kiswahili' },
 ];
 
-const saved = localStorage.getItem('ops.lang');
+type Dict = Record<string, string>;
 
-i18n.use(initReactI18next).init({
-  resources: {
-    en: { translation: { ...en, ...b7.en, ...p7a.en, ...b8.en, ...b9.en, ...b10.en, ...b11.en, ...b12.en, ...b12b.en, ...b13.en } }, fr: { translation: { ...fr, ...b7.fr, ...p7a.fr, ...b8.fr, ...b9.fr, ...b10.fr, ...b11.fr, ...b12.fr, ...b12b.fr, ...b13.fr } },
-    rw: { translation: { ...rw, ...b7.rw, ...p7a.rw, ...b8.rw, ...b9.rw, ...b10.rw, ...b11.rw, ...b12.rw, ...b12b.rw, ...b13.rw } }, sw: { translation: { ...sw, ...b7.sw, ...p7a.sw, ...b8.sw, ...b9.sw, ...b10.sw, ...b11.sw, ...b12.sw, ...b12b.sw, ...b13.sw } },
-  },
-  lng: saved && LANGS.some((l) => l.code === saved) ? saved : 'en',
+/**
+ * Each language is its own chunk, fetched only when it is needed (English is always loaded: it is the fallback).
+ * The per-language slice of every bundle*.ts / patch*.ts file is produced by the Vite plugin in vite.config.ts,
+ * so adding a new bundle file needs no change here.
+ */
+const base: Record<string, () => Promise<{ default: Dict }>> = {
+  en: () => import('./en'), fr: () => import('./fr'), rw: () => import('./rw'), sw: () => import('./sw'),
+};
+const slices: Record<string, Record<string, () => Promise<unknown>>> = {
+  en: import.meta.glob('./{bundle,patch}[0-9]*.ts', { query: { lang: 'en' }, import: 'default' }),
+  fr: import.meta.glob('./{bundle,patch}[0-9]*.ts', { query: { lang: 'fr' }, import: 'default' }),
+  rw: import.meta.glob('./{bundle,patch}[0-9]*.ts', { query: { lang: 'rw' }, import: 'default' }),
+  sw: import.meta.glob('./{bundle,patch}[0-9]*.ts', { query: { lang: 'sw' }, import: 'default' }),
+};
+
+const loading = new Map<string, Promise<void>>();
+
+export function loadLanguage(code: string): Promise<void> {
+  const lang = LANGS.some((l) => l.code === code.slice(0, 2)) ? code.slice(0, 2) : 'en';
+  let p = loading.get(lang);
+  if (!p) {
+    p = (async () => {
+      const parts = bundleOrder(Object.keys(slices[lang]));
+      const [main, ...rest] = await Promise.all([base[lang](), ...parts.map((k) => slices[lang][k]())]);
+      const merged: Dict = Object.assign({}, main.default, ...(rest as Dict[]));
+      i18n.addResourceBundle(lang, 'translation', merged, true, true);
+    })();
+    p.catch(() => loading.delete(lang));            // a failed download can be retried
+    loading.set(lang, p);
+  }
+  return p;
+}
+
+const saved = localStorage.getItem('ops.lang');
+const initial = saved && LANGS.some((l) => l.code === saved) ? saved : 'en';
+
+const initialised = i18n.use(initReactI18next).init({
+  resources: {},
+  lng: initial,
   fallbackLng: 'en',                 // English is the default language
   keySeparator: false,               // flat keys such as "menu.admin.users"
   interpolation: { escapeValue: false },
 });
+
+// Switching language (menu, profile, portal) first makes sure that language's texts are downloaded.
+const change = i18n.changeLanguage.bind(i18n);
+i18n.changeLanguage = (async (lng?: string, callback?: Parameters<typeof change>[1]) => {
+  if (lng) await loadLanguage(lng).catch(() => undefined);
+  return change(lng, callback);
+}) as typeof i18n.changeLanguage;
+
+/** Resolves when the active language and the English fallback are ready: the app renders after this. */
+export const i18nReady: Promise<void> = initialised.then(() => Promise.all([loadLanguage('en'), loadLanguage(initial)])).then(() => undefined).catch(() => undefined);
 
 i18n.on('languageChanged', (lng) => {
   localStorage.setItem('ops.lang', lng);

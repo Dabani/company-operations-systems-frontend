@@ -56,6 +56,17 @@ const ClientPortalAdminPage = pg(() => import('./pages/ClientPortalAdminPage'), 
 const NotFoundPage = pg(() => import('./pages/ErrorPages'), 'NotFoundPage');
 const ReportsPage = pg(() => import('./pages/ReportsPage'), 'ReportsPage');
 const ReportViewPage = pg(() => import('./pages/ReportViewPage'), 'ReportViewPage');
+const PositionsPage = pg(() => import('./pages/PositionsPage'), 'PositionsPage');
+const EmploymentChangesPage = pg(() => import('./pages/EmploymentChangesPage'), 'EmploymentChangesPage');
+const ReviewsPage = pg(() => import('./pages/ReviewsPage'), 'ReviewsPage');
+const MyEmploymentPage = pg(() => import('./pages/MyEmploymentPage'), 'MyEmploymentPage');
+const RequisitionsPage = pg(() => import('./pages/RequisitionsPage'), 'RequisitionsPage');
+const RecruitmentPage = pg(() => import('./pages/RecruitmentPage'), 'RecruitmentPage');
+const InterviewsPage = pg(() => import('./pages/InterviewsPage'), 'InterviewsPage');
+const ClockPage = pg(() => import('./pages/ClockPage'), 'ClockPage');
+const TeamAttendancePage = pg(() => import('./pages/TeamAttendancePage'), 'TeamAttendancePage');
+const AttendanceSetupPage = pg(() => import('./pages/AttendanceSetupPage'), 'AttendanceSetupPage');
+const AttendanceImportPage = pg(() => import('./pages/AttendanceImportPage'), 'AttendanceImportPage');
 
 export default function App() {
   const { me, loading } = useAuth();
@@ -123,6 +134,17 @@ export default function App() {
         <Route path="/admin/audit-log" element={guard('audit_log.view', <AuditLogPage />)} />
         <Route path="/approvals" element={guard(['approval.view', 'approval.act'], <ApprovalsPage />)} />
         <Route path="/hr/employees" element={guard('employee.view', <EmployeesPage />)} />
+        <Route path="/hr/positions" element={guard(['employee.view', 'hr.structure.manage'], <PositionsPage />)} />
+        <Route path="/hr/employment-changes" element={guard('hr.history.manage', <EmploymentChangesPage />)} />
+        <Route path="/hr/reviews" element={guard(['hr.reviews.manage', 'hr.reviews.write', 'hr.self.view'], <ReviewsPage />)} />
+        <Route path="/me/employment" element={guard('hr.self.view', <MyEmploymentPage />)} />
+        <Route path="/hr/requisitions" element={guard(['hr.requisition.create', 'hr.requisition.approve', 'hr.recruitment.manage'], <RequisitionsPage />)} />
+        <Route path="/hr/recruitment" element={guard('hr.recruitment.manage', <RecruitmentPage />)} />
+        <Route path="/hr/interviews" element={guard(['hr.interview.score', 'hr.recruitment.manage'], <InterviewsPage />)} />
+        <Route path="/attendance/clock" element={guard('hr.attendance.clock', <ClockPage />)} />
+        <Route path="/attendance/team" element={guard(['hr.attendance.view', 'hr.attendance.manage'], <TeamAttendancePage />)} />
+        <Route path="/attendance/setup" element={guard('hr.attendance.manage', <AttendanceSetupPage />)} />
+        <Route path="/attendance/import" element={guard('hr.attendance.manage', <AttendanceImportPage />)} />
         <Route path="/clients" element={guard('client.view', <ClientsPage />)} />
         <Route path="/admin/rules" element={guard('rules.view', <RulesPage />)} />
         <Route path="/admin/approval-flows" element={guard('approval.configure', <ApprovalFlowsPage />)} />

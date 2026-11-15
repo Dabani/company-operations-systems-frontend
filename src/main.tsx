@@ -9,7 +9,7 @@ import '@mantine/notifications/styles.css';
 import '@mantine/charts/styles.css';
 import '@mantine/dropzone/styles.css';
 import './styles.css';
-import './i18n';
+import { i18nReady } from './i18n';
 import { theme } from './theme';
 import { AuthProvider } from './auth/AuthContext';
 import App from './App';
@@ -21,7 +21,8 @@ const queryClient = new QueryClient({ defaultOptions: {
   mutations: { networkMode: 'always' },
 } });
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
+// The app renders once the active language (and the English fallback) has been downloaded.
+void i18nReady.then(() => ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <MantineProvider theme={theme} defaultColorScheme="auto">
       <Notifications position="top-right" />
@@ -35,4 +36,4 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
       </QueryClientProvider>
     </MantineProvider>
   </React.StrictMode>,
-);
+));
