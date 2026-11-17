@@ -29,6 +29,7 @@
     "i18next": "^25.0.0",
     "laravel-echo": "^2.6.1",
     "pusher-js": "^8.6.0",
+    "qrcode.react": "^4.2.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-i18next": "^16.0.0",
