@@ -67,6 +67,10 @@ const ClockPage = pg(() => import('./pages/ClockPage'), 'ClockPage');
 const TeamAttendancePage = pg(() => import('./pages/TeamAttendancePage'), 'TeamAttendancePage');
 const AttendanceSetupPage = pg(() => import('./pages/AttendanceSetupPage'), 'AttendanceSetupPage');
 const AttendanceImportPage = pg(() => import('./pages/AttendanceImportPage'), 'AttendanceImportPage');
+const MeetingsPage = pg(() => import('./pages/MeetingsPage'), 'MeetingsPage');
+const MeetingDetailPage = pg(() => import('./pages/MeetingDetailPage'), 'MeetingDetailPage');
+const MeetingRoomsPage = pg(() => import('./pages/MeetingRoomsPage'), 'MeetingRoomsPage');
+const MeetingRsvpPage = pg(() => import('./pages/MeetingRsvpPage'), 'MeetingRsvpPage');
 
 export default function App() {
   const { me, loading } = useAuth();
@@ -78,11 +82,12 @@ export default function App() {
 
   // Links from e-mails must open whether or not somebody is already signed in on this browser (the page itself asks them to
   // sign out). Previously a signed-in administrator testing an invitation landed on "page not found".
-  if (pathname === '/activate' || pathname === '/reset-password') {
+  if (pathname === '/activate' || pathname === '/reset-password' || pathname.startsWith('/meeting-rsvp/')) {
     return (
       <RouteBoundary><Routes>
         <Route path="/activate" element={<ActivatePage />} />
         <Route path="/reset-password" element={<ResetPasswordPage />} />
+        <Route path="/meeting-rsvp/:token" element={<MeetingRsvpPage />} />
       </Routes></RouteBoundary>
     );
   }
@@ -145,6 +150,9 @@ export default function App() {
         <Route path="/attendance/team" element={guard(['hr.attendance.view', 'hr.attendance.manage'], <TeamAttendancePage />)} />
         <Route path="/attendance/setup" element={guard('hr.attendance.manage', <AttendanceSetupPage />)} />
         <Route path="/attendance/import" element={guard('hr.attendance.manage', <AttendanceImportPage />)} />
+        <Route path="/meetings" element={guard('meeting.view', <MeetingsPage />)} />
+        <Route path="/meetings/rooms" element={guard('meeting.room.manage', <MeetingRoomsPage />)} />
+        <Route path="/meetings/:id" element={guard('meeting.view', <MeetingDetailPage />)} />
         <Route path="/clients" element={guard('client.view', <ClientsPage />)} />
         <Route path="/admin/rules" element={guard('rules.view', <RulesPage />)} />
         <Route path="/admin/approval-flows" element={guard('approval.configure', <ApprovalFlowsPage />)} />

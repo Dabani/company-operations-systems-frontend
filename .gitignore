@@ -50,3 +50,4 @@ desktop.ini
 
 .bundle-*-backup/
 .patch-*-backup/
+.cops-backup/
