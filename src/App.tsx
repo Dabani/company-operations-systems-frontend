@@ -72,6 +72,9 @@ const MeetingDetailPage = pg(() => import('./pages/MeetingDetailPage'), 'Meeting
 const MeetingRoomsPage = pg(() => import('./pages/MeetingRoomsPage'), 'MeetingRoomsPage');
 const MeetingRsvpPage = pg(() => import('./pages/MeetingRsvpPage'), 'MeetingRsvpPage');
 const MeetingCheckinPage = pg(() => import('./pages/MeetingCheckinPage'), 'MeetingCheckinPage');
+const MinutesPage = pg(() => import('./pages/MinutesPage'), 'MinutesPage');
+const FollowUpsPage = pg(() => import('./pages/FollowUpsPage'), 'FollowUpsPage');
+const MinutesDetailPage = pg(() => import('./pages/MinutesDetailPage'), 'MinutesDetailPage');
 
 export default function App() {
   const { me, loading } = useAuth();
@@ -155,6 +158,9 @@ export default function App() {
         <Route path="/meetings/rooms" element={guard('meeting.room.manage', <MeetingRoomsPage />)} />
         <Route path="/meetings/:id" element={guard('meeting.view', <MeetingDetailPage />)} />
         <Route path="/meeting-checkin/:token" element={guard('meeting.view', <MeetingCheckinPage />)} />
+        <Route path="/minutes" element={guard('meeting.view', <MinutesPage />)} />
+        <Route path="/follow-ups" element={guard('meeting.view', <FollowUpsPage />)} />
+        <Route path="/minutes/:id" element={guard('meeting.view', <MinutesDetailPage />)} />
         <Route path="/clients" element={guard('client.view', <ClientsPage />)} />
         <Route path="/admin/rules" element={guard('rules.view', <RulesPage />)} />
         <Route path="/admin/approval-flows" element={guard('approval.configure', <ApprovalFlowsPage />)} />

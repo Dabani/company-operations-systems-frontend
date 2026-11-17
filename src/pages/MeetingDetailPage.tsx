@@ -11,6 +11,8 @@ import { MeetingFormModal, type MeetingForEdit } from '@/components/MeetingFormM
 import { PageHeader } from '@/components/PageHeader';
 import { PapersPanel } from '@/components/PapersPanel';
 import { MeetingAttendanceTab } from '@/components/MeetingAttendanceTab';
+import { MeetingMinutesTab } from '@/components/MeetingMinutesTab';
+import { MeetingFollowUpTab } from '@/components/MeetingFollowUpTab';
 import { PeopleMultiSelect, PersonSelect, usePeople } from '@/components/PeoplePicker';
 import { RichTextField } from '@/components/RichTextField';
 import { SafeHtml } from '@/components/SafeHtml';
@@ -122,12 +124,16 @@ export function MeetingDetailPage() {
           <Tabs.Tab value="agenda">{t('meet.tab_agenda')} ({m.agenda.length})</Tabs.Tab>
           <Tabs.Tab value="people">{t('meet.tab_people')} ({m.invitations.length})</Tabs.Tab>
           {['in_progress', 'held', 'closed'].includes(m.status) && <Tabs.Tab value="attendance">{t('meet.tab_attendance')}</Tabs.Tab>}
+          {['in_progress', 'held', 'closed'].includes(m.status) && <Tabs.Tab value="minutes">{t('meet.tab_minutes')}</Tabs.Tab>}
+          {['in_progress', 'held', 'closed'].includes(m.status) && <Tabs.Tab value="followups">{t('fu.menu')}</Tabs.Tab>}
           <Tabs.Tab value="papers">{t('meet.tab_papers')}</Tabs.Tab>
           <Tabs.Tab value="history">{t('meet.tab_history')}</Tabs.Tab>
         </Tabs.List>
         <Tabs.Panel value="agenda"><AgendaTab m={m} onChange={refresh} /></Tabs.Panel>
         <Tabs.Panel value="people"><PeopleTab m={m} onChange={refresh} /></Tabs.Panel>
         <Tabs.Panel value="attendance"><MeetingAttendanceTab meetingId={m.id} code={m.code} /></Tabs.Panel>
+        <Tabs.Panel value="minutes"><MeetingMinutesTab meetingId={m.id} /></Tabs.Panel>
+        <Tabs.Panel value="followups"><MeetingFollowUpTab meetingId={m.id} /></Tabs.Panel>
         <Tabs.Panel value="papers"><PapersPanel kind="meeting" id={m.id} canUpload={me.can_manage && ['draft', 'scheduled'].includes(m.status)} /></Tabs.Panel>
         <Tabs.Panel value="history"><HistoryTab m={m} /></Tabs.Panel>
       </Tabs>
