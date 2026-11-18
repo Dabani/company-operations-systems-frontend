@@ -71,6 +71,14 @@ const MeetingsPage = pg(() => import('./pages/MeetingsPage'), 'MeetingsPage');
 const MeetingDetailPage = pg(() => import('./pages/MeetingDetailPage'), 'MeetingDetailPage');
 const MeetingRoomsPage = pg(() => import('./pages/MeetingRoomsPage'), 'MeetingRoomsPage');
 const MeetingRsvpPage = pg(() => import('./pages/MeetingRsvpPage'), 'MeetingRsvpPage');
+const EventsPage = pg(() => import('./pages/EventsPage'), 'EventsPage');
+const EventDetailPage = pg(() => import('./pages/EventDetailPage'), 'EventDetailPage');
+const EventRegisterPage = pg(() => import('./pages/EventRegisterPage'), 'EventRegisterPage');
+const EventTicketPage = pg(() => import('./pages/EventTicketPage'), 'EventTicketPage');
+const SuppliersPage = pg(() => import('./pages/SuppliersPage'), 'SuppliersPage');
+const SupplierDetailPage = pg(() => import('./pages/SupplierDetailPage'), 'SupplierDetailPage');
+const PurchaseRequisitionsPage = pg(() => import('./pages/PurchaseRequisitionsPage'), 'PurchaseRequisitionsPage');
+const PurchaseRequisitionDetailPage = pg(() => import('./pages/PurchaseRequisitionDetailPage'), 'PurchaseRequisitionDetailPage');
 const MeetingCheckinPage = pg(() => import('./pages/MeetingCheckinPage'), 'MeetingCheckinPage');
 const MinutesPage = pg(() => import('./pages/MinutesPage'), 'MinutesPage');
 const FollowUpsPage = pg(() => import('./pages/FollowUpsPage'), 'FollowUpsPage');
@@ -86,12 +94,14 @@ export default function App() {
 
   // Links from e-mails must open whether or not somebody is already signed in on this browser (the page itself asks them to
   // sign out). Previously a signed-in administrator testing an invitation landed on "page not found".
-  if (pathname === '/activate' || pathname === '/reset-password' || pathname.startsWith('/meeting-rsvp/')) {
+  if (pathname === '/activate' || pathname === '/reset-password' || pathname.startsWith('/meeting-rsvp/') || pathname.startsWith('/event-register/') || pathname.startsWith('/event-ticket/')) {
     return (
       <RouteBoundary><Routes>
         <Route path="/activate" element={<ActivatePage />} />
         <Route path="/reset-password" element={<ResetPasswordPage />} />
         <Route path="/meeting-rsvp/:token" element={<MeetingRsvpPage />} />
+        <Route path="/event-register/:token" element={<EventRegisterPage />} />
+        <Route path="/event-ticket/:ticket" element={<EventTicketPage />} />
       </Routes></RouteBoundary>
     );
   }
@@ -155,6 +165,12 @@ export default function App() {
         <Route path="/attendance/setup" element={guard('hr.attendance.manage', <AttendanceSetupPage />)} />
         <Route path="/attendance/import" element={guard('hr.attendance.manage', <AttendanceImportPage />)} />
         <Route path="/meetings" element={guard('meeting.view', <MeetingsPage />)} />
+        <Route path="/events" element={guard('event.view', <EventsPage />)} />
+        <Route path="/events/:id" element={guard('event.view', <EventDetailPage />)} />
+        <Route path="/suppliers" element={guard('procurement.view', <SuppliersPage />)} />
+        <Route path="/suppliers/:id" element={guard('procurement.view', <SupplierDetailPage />)} />
+        <Route path="/requisitions" element={guard('procurement.requisition.create', <PurchaseRequisitionsPage />)} />
+        <Route path="/requisitions/:id" element={guard('procurement.requisition.create', <PurchaseRequisitionDetailPage />)} />
         <Route path="/meetings/rooms" element={guard('meeting.room.manage', <MeetingRoomsPage />)} />
         <Route path="/meetings/:id" element={guard('meeting.view', <MeetingDetailPage />)} />
         <Route path="/meeting-checkin/:token" element={guard('meeting.view', <MeetingCheckinPage />)} />
