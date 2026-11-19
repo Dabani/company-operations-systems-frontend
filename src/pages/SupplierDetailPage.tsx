@@ -92,7 +92,7 @@ export function SupplierDetailPage() {
           <Stack gap={4}>{s.history.map((h, i) => <Text size="xs" key={i}>{new Date(h.at).toLocaleString(i18n.language)} — {h.by ?? t('sup.system')}: {t(`sup.status.${h.status}`)}{h.note ? ` (${h.note})` : ''}</Text>)}</Stack></Card>)}
       <SupplierFormModal opened={editing} onClose={() => setEditing(false)} supplier={s} onSaved={() => { void qc.invalidateQueries({ queryKey: key }); }} />
       <BankModal opened={bankOpen} onClose={() => setBankOpen(false)} supplierId={s.id} onSaved={(d) => set(d)} />
-      <ConfirmModal opened={submitting} onClose={() => setSubmitting(false)} loading={submit.isPending} title={t('sup.submit')} text={t('sup.submit_text')} onConfirm={() => submit.mutate()} />
+      <ConfirmModal opened={submitting} onClose={() => setSubmitting(false)} loading={submit.isPending} title={t('sup.submit')} text={t('sup.submit_text')} onConfirm={() => submit.mutate()} confirmLabel={t('common.confirm')} confirmColor="blue" />
       <Modal opened={!!move} onClose={() => setMove(null)} centered title={move ? t(`sup.to.${move}`) : ''}>
         <Stack gap="sm">
           <TextInput label={t('sup.reason')} required={!!move && SUPPLIER_REASON_MOVES.includes(move)} maxLength={1000} value={note} onChange={(e) => setNote(e.currentTarget.value)} />

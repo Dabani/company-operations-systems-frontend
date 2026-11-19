@@ -11,6 +11,7 @@ import { PageHeader } from '@/components/PageHeader';
 import { toastError, toastOk } from '@/lib/ui';
 import type { Paginated } from '@/types';
 import { RichTextField } from '@/components/RichTextField';
+import { ConfirmButton } from '@/components/ConfirmButton';
 import { plainText } from '@/lib/richText';
 
 interface Entry { id: string; project: string; project_id: string; task: string | null; work_date: string; started_at: string; ended_at: string | null; duration_seconds: number; is_manual: boolean; manual_reason: string | null;
@@ -62,7 +63,7 @@ export function TimePage() {
                 <Badge color={COLOR[w.timesheet.status === 'draft' ? 'draft' : w.timesheet.status]} variant="light">{t(`time.ts.${w.timesheet.status}`)}</Badge></Group>
               <Group gap="xs"><Text size="sm">{t('time.total')}: <b>{hours(w.total_seconds)} h</b> · {t('time.billable')}: {hours(w.billable_seconds)} h</Text>
                 <Button variant="light" leftSection={<IconPlus size={16} />} disabled={w.timesheet.status !== 'draft'} onClick={() => setAdd({ project: null, task: null, start: '', end: '', reason: '', billable: true })}>{t('time.add_manual')}</Button>
-                <Button loading={submit.isPending} disabled={w.timesheet.status !== 'draft' || w.entries.length === 0} onClick={() => submit.mutate()}>{t('time.submit_week')}</Button></Group>
+                <ConfirmButton loading={submit.isPending} disabled={w.timesheet.status !== 'draft' || w.entries.length === 0} title={t('time.submit_week')} text={t('confirm.submit_timesheet')} onConfirm={() => submit.mutate()}>{t('time.submit_week')}</ConfirmButton></Group>
             </Group>
             {w.entries.some((e) => e.auto_stopped) && <Alert color="red" variant="light">{t('time.auto_stopped_note')}</Alert>}
             {w.timesheet.status === 'submitted' && <Alert color="orange" variant="light">{t('time.awaiting_approval')} <Text component={Link} to="/approvals" size="sm" td="underline">{t('menu.approvals')}</Text></Alert>}

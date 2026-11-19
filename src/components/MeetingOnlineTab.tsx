@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { api, parseError } from '@/api/client';
 import { InterventionPanel } from '@/components/InterventionPanel';
+import { CollabTabs } from '@/components/CollabTabs';
 import { JitsiFrame } from '@/components/JitsiFrame';
 import { POLL_MS, type JoinData, type Queue } from '@/lib/online';
 import { toastError } from '@/lib/ui';
@@ -81,6 +82,7 @@ export function MeetingOnlineTab({ meetingId }: { meetingId: string }) {
               </Grid.Col>
             )}
           </Grid>
+          {s.me.is_participant && <CollabTabs base={`/meetings/${meetingId}`} staff agenda={s.agenda} guestsMayVote={s.allow_guests && !s.confidential} />}
         </>
       )}
     </Stack>

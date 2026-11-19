@@ -10,6 +10,7 @@ import { useAuth } from '@/auth/AuthContext';
 import { DataList, type Column } from '@/components/DataList';
 import { PageHeader } from '@/components/PageHeader';
 import { RichTextField } from '@/components/RichTextField';
+import { ConfirmButton } from '@/components/ConfirmButton';
 import { SafeHtml } from '@/components/SafeHtml';
 import { StatusBadge } from '@/components/StatusBadge';
 import { fmtDateTime } from '@/lib/format';
@@ -113,7 +114,7 @@ export function TrainingPage() {
                 {report.data.detail.gaps.length > 0 && <Alert color="orange" title={`${t('trn.gaps')}: ${report.data.detail.gaps.length}`}><Text size="sm">{report.data.detail.gaps.map((g) => g.name + (g.department ? ` (${g.department})` : '')).join(', ')}</Text></Alert>}
                 {(manage || can('compliance.manage')) && (
                   <Stack gap="xs"><RichTextField label={t('trn.comment')} value={comment} onChange={setComment} minHeight={70} />
-                    <Group justify="flex-end"><Button leftSection={<IconSend size={16} />} loading={submit.isPending} onClick={() => submit.mutate()}>{t('trn.submit')}</Button></Group></Stack>)}
+                    <Group justify="flex-end"><ConfirmButton leftSection={<IconSend size={16} />} loading={submit.isPending} title={t('trn.submit')} text={t('confirm.submit_report')} onConfirm={() => submit.mutate()}>{t('trn.submit')}</ConfirmButton></Group></Stack>)}
               </Stack>)}
           </Stack>
         </Tabs.Panel>

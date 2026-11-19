@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { api } from '@/api/client';
 import { useAuth } from '@/auth/AuthContext';
 import { RichTextField } from '@/components/RichTextField';
+import { ConfirmButton } from '@/components/ConfirmButton';
 import { PageHeader } from '@/components/PageHeader';
 import { useLookup } from '@/lib/useLookup';
 import { toastError, toastOk } from '@/lib/ui';
@@ -73,7 +74,7 @@ export function RulesPage() {
                     <Table.Td><Text size="xs">{v.effective_from} → {v.effective_to ?? '∞'} · P{v.priority}</Text></Table.Td>
                     <Table.Td><Group gap={4} justify="flex-end" wrap="nowrap">
                       {can('rules.configure') && ['draft', 'impact_check'].includes(v.status) && <Button size="compact-xs" variant="light" loading={runImpact.isPending} onClick={() => runImpact.mutate(v)}>{t('rules.impact')}</Button>}
-                      {can('rules.configure') && v.status === 'impact_check' && <Button size="compact-xs" onClick={() => act.mutate({ path: `/rule-versions/${v.id}/submit` })}>{t('rules.submit')}</Button>}
+                      {can('rules.configure') && v.status === 'impact_check' && <ConfirmButton size="compact-xs" title={t('rules.submit')} text={t('confirm.submit_rule')} onConfirm={() => act.mutate({ path: `/rule-versions/${v.id}/submit` })}>{t('rules.submit')}</ConfirmButton>}
                       {can('rules.signoff') && s.is_legal_profile && v.verification === 'unverified' && <Button size="compact-xs" color="green" variant="light" onClick={() => act.mutate({ path: `/rule-versions/${v.id}/signoff` })}>{t('rules.signoff')}</Button>}
                     </Group></Table.Td>
                   </Table.Tr>

@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import { api, parseError } from '@/api/client';
 import { InterventionPanel } from '@/components/InterventionPanel';
+import { CollabTabs } from '@/components/CollabTabs';
 import { JitsiFrame } from '@/components/JitsiFrame';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { POLL_MS, type JoinData, type Queue } from '@/lib/online';
@@ -56,6 +57,7 @@ export function MeetingGuestJoinPage() {
               </div>
             </Group>
           )}
+          {s.enabled && <CollabTabs base={base} staff={false} />}
         </Stack>
       )}
     </Container>

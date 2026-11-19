@@ -123,7 +123,7 @@ export function EventDetailPage() {
         </Stack>
       </Modal>
       <ConfirmModal opened={leaving} onClose={() => setLeaving(false)} loading={leave.isPending} title={t('ev.cancel_my')} text={t('ev.cancel_my_text')} onConfirm={() => leave.mutate()} />
-      <ConfirmModal opened={rotating} onClose={() => setRotating(false)} loading={rotate.isPending} title={t('ev.rotate')} text={t('ev.rotate_text')} onConfirm={() => rotate.mutate()} />
+      <ConfirmModal opened={rotating} onClose={() => setRotating(false)} loading={rotate.isPending} title={t('ev.rotate')} text={t('ev.rotate_text')} onConfirm={() => rotate.mutate()} confirmLabel={t('common.confirm')} confirmColor="blue" />
     </>
   );
 }

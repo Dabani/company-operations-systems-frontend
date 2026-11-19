@@ -157,8 +157,8 @@ export function MeetingDetailPage() {
           <Group justify="flex-end"><Button variant="default" onClick={() => setProposing(false)}>{t('common.cancel')}</Button><Button type="submit" loading={rsvp.isPending} disabled={!proposeForm.values.when}>{t('meet.send_proposal')}</Button></Group>
         </Stack></form>
       </Modal>
-      <ConfirmModal opened={confirm === 'hold'} onClose={() => setConfirm(null)} onConfirm={() => hold.mutate()} loading={hold.isPending} title={t('meet.mark_held')} text={t('meet.hold_confirm')} />
-      <ConfirmModal opened={confirm === 'start'} onClose={() => setConfirm(null)} onConfirm={() => start.mutate()} loading={start.isPending} title={t('meet.start')} text={t('meet.start_confirm')} />
+      <ConfirmModal opened={confirm === 'hold'} onClose={() => setConfirm(null)} onConfirm={() => hold.mutate()} loading={hold.isPending} title={t('meet.mark_held')} text={t('meet.hold_confirm')} confirmLabel={t('common.confirm')} confirmColor="blue" />
+      <ConfirmModal opened={confirm === 'start'} onClose={() => setConfirm(null)} onConfirm={() => start.mutate()} loading={start.isPending} title={t('meet.start')} text={t('meet.start_confirm')} confirmLabel={t('common.confirm')} confirmColor="blue" />
     </>
   );
 }

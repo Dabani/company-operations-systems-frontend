@@ -126,7 +126,7 @@ export function RecruitmentPage() {
           <Group justify="flex-end"><Button variant="default" onClick={() => setAdding(null)}>{t('common.cancel')}</Button><Button type="submit" loading={add.isPending}>{t('common.save')}</Button></Group>
         </Stack></form>
       </Modal>
-      <ConfirmModal opened={!!closing} onClose={() => setClosing(null)} onConfirm={() => close.mutate()} loading={close.isPending} title={t('hr.close_cycle')} text={t('rec.close_vacancy_confirm')} />
+      <ConfirmModal opened={!!closing} onClose={() => setClosing(null)} onConfirm={() => close.mutate()} loading={close.isPending} title={t('hr.close_cycle')} text={t('rec.close_vacancy_confirm')} confirmLabel={t('common.confirm')} confirmColor="blue" />
     </>
   );
 }

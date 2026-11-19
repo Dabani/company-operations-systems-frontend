@@ -90,7 +90,7 @@ export function SupplierInvoiceDetailPage() {
         <AttachmentsPanel endpoint={`/supplier-invoice-files/${i.id}`} canUpload={i.me.can_cancel && ['received', 'on_hold', 'matched', 'approved'].includes(i.status)} /></Card>
       <Card withBorder padding="md"><Title order={5} mb="xs">{t('ev.history')}</Title>
         <Stack gap={4}>{i.history.map((h, n) => <Text size="xs" key={n}>{new Date(h.at).toLocaleString(i18n.language)} — {h.by ?? t('sup.system')}: {t(`inv.status.${h.status}`)}{h.note ? ` (${h.note})` : ''}</Text>)}</Stack></Card>
-      <ConfirmModal opened={dialog === 'approve'} onClose={() => setDialog(null)} loading={post.isPending} title={t('inv.approve')} text={t('inv.approve_text')} onConfirm={() => post.mutate({ path: 'approve' })} />
+      <ConfirmModal opened={dialog === 'approve'} onClose={() => setDialog(null)} loading={post.isPending} title={t('inv.approve')} text={t('inv.approve_text')} onConfirm={() => post.mutate({ path: 'approve' })} confirmLabel={t('common.confirm')} confirmColor="blue" />
       <Modal opened={dialog === 'exception' || dialog === 'reject' || dialog === 'cancel'} onClose={() => setDialog(null)} centered title={dialog === 'exception' ? t('inv.decide_exception') : dialog === 'reject' ? t('inv.reject') : t('common.cancel')}>
         <Stack gap="sm">
           {dialog === 'exception' && <Group><Button variant={accept ? 'filled' : 'default'} onClick={() => setAccept(true)}>{t('inv.accept_exception')}</Button><Button color="red" variant={!accept ? 'filled' : 'default'} onClick={() => setAccept(false)}>{t('inv.reject')}</Button></Group>}

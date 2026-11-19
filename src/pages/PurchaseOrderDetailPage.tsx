@@ -105,7 +105,7 @@ export function PurchaseOrderDetailPage() {
               {g.note && <Text size="xs" c="dimmed" ml="md">{g.note}</Text>}</div>))}</Stack></Card>)}
       <Card withBorder padding="md"><Title order={5} mb="xs">{t('ev.history')}</Title>
         <Stack gap={4}>{o.history.map((h, i) => <Text size="xs" key={i}>{new Date(h.at).toLocaleString(i18n.language)} — {h.by ?? t('sup.system')}: {t(`po.status.${h.status}`)}{h.note ? ` (${h.note})` : ''}</Text>)}</Stack></Card>
-      <ConfirmModal opened={confirm !== null} onClose={() => setConfirm(null)} loading={act.isPending} title={confirm === 'issue' ? t('po.issue') : t('req.submit')} text={confirm === 'issue' ? t('po.issue_text') : t('po.submit_text')} onConfirm={() => confirm && act.mutate(confirm)} />
+      <ConfirmModal opened={confirm !== null} onClose={() => setConfirm(null)} loading={act.isPending} title={confirm === 'issue' ? t('po.issue') : t('req.submit')} text={confirm === 'issue' ? t('po.issue_text') : t('po.submit_text')} onConfirm={() => confirm && act.mutate(confirm)} confirmLabel={t('common.confirm')} confirmColor="blue" />
       <Modal opened={move !== null} onClose={() => setMove(null)} centered title={move === 'closed' ? t('po.close') : t('po.cancel')}>
         <Stack gap="sm">
           {move === 'closed' && shortClose && <Alert color="orange" variant="light">{t('po.short_close')}</Alert>}

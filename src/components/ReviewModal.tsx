@@ -7,6 +7,7 @@ import { api, parseError } from '@/api/client';
 import { useLookup } from '@/lib/useLookup';
 import { toastError, toastOk } from '@/lib/ui';
 import { RichTextField } from '@/components/RichTextField';
+import { ConfirmButton } from '@/components/ConfirmButton';
 import { SafeHtml } from '@/components/SafeHtml';
 
 export interface Review {
@@ -48,7 +49,7 @@ export function ReviewModal({ id, onClose }: { id: string | null; onClose: () =>
                 <RichTextField label={t('hr.summary')} minHeight={100} {...form.getInputProps('summary')} />
                 <RichTextField label={t('hr.goals')} minHeight={100} {...form.getInputProps('goals')} />
                 <Alert variant="light" color="blue">{t('hr.review_submit_note')}</Alert>
-                <Group justify="flex-end"><Button type="submit" variant="default" loading={save.isPending}>{t('hr.save_draft')}</Button><Button loading={submit.isPending} onClick={() => submit.mutate()}>{t('hr.submit_review')}</Button></Group>
+                <Group justify="flex-end"><Button type="submit" variant="default" loading={save.isPending}>{t('hr.save_draft')}</Button><ConfirmButton loading={submit.isPending} title={t('hr.submit_review')} text={t('confirm.submit_review')} onConfirm={() => submit.mutate()}>{t('hr.submit_review')}</ConfirmButton></Group>
               </Stack>
             </form>
           ) : (

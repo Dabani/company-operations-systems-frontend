@@ -101,7 +101,7 @@ function View({ d }: { d: Detail }) {
           </Timeline>
         </Card>)}
 
-      <ConfirmModal opened={confirmSubmit} onClose={() => setConfirmSubmit(false)} onConfirm={() => submit.mutate()} loading={submit.isPending} title={t('min.submit')} text={t('min.submit_text')} />
+      <ConfirmModal opened={confirmSubmit} onClose={() => setConfirmSubmit(false)} onConfirm={() => submit.mutate()} loading={submit.isPending} title={t('min.submit')} text={t('min.submit_text')} confirmLabel={t('common.confirm')} confirmColor="blue" />
       {publishing && <PublishModal d={d} onClose={() => setPublishing(false)} onDone={() => { setPublishing(false); refresh(); }} />}
     </Stack>
   );

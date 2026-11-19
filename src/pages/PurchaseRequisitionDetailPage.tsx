@@ -88,7 +88,7 @@ export function PurchaseRequisitionDetailPage() {
       {r.history.length > 0 && <Card withBorder padding="md"><Title order={5} mb="xs">{t('ev.history')}</Title>
         <Stack gap={4}>{r.history.map((h, i) => <Text size="xs" key={i}>{new Date(h.at).toLocaleString(i18n.language)} — {h.by ?? t('sup.system')}: {t(`req.status.${h.status}`)}{h.note ? ` (${h.note})` : ''}</Text>)}</Stack></Card>}
       <PurchaseRequisitionFormModal opened={editing} onClose={() => setEditing(false)} requisition={{ ...r, project: r.project, preferred_supplier: r.preferred_supplier, lines: r.lines } as ReqForEdit} onSaved={() => { void qc.invalidateQueries({ queryKey: key }); }} />
-      <ConfirmModal opened={submitting} onClose={() => setSubmitting(false)} loading={submit.isPending} title={t('req.submit')} text={t('req.submit_text')} onConfirm={() => submit.mutate()} />
+      <ConfirmModal opened={submitting} onClose={() => setSubmitting(false)} loading={submit.isPending} title={t('req.submit')} text={t('req.submit_text')} onConfirm={() => submit.mutate()} confirmLabel={t('common.confirm')} confirmColor="blue" />
       <ConfirmModal opened={deleting} onClose={() => setDeleting(false)} loading={del.isPending} onConfirm={() => del.mutate()} />
       <Modal opened={cancelling} onClose={() => setCancelling(false)} centered title={t('req.cancel')}>
         <Stack gap="sm">

@@ -121,7 +121,7 @@ export function TeamAttendancePage() {
         </Table>
       </Drawer>
 
-      <ConfirmModal opened={validate} onClose={() => setValidate(false)} onConfirm={() => doValidate.mutate()} loading={doValidate.isPending} title={t('att.validate_month')} text={t('att.validate_confirm', { month: m })} />
+      <ConfirmModal opened={validate} onClose={() => setValidate(false)} onConfirm={() => doValidate.mutate()} loading={doValidate.isPending} title={t('att.validate_month')} text={t('att.validate_confirm', { month: m })} confirmLabel={t('common.confirm')} confirmColor="blue" />
       <Modal opened={reopen} onClose={() => setReopen(false)} centered title={t('att.reopen_month')}>
         <form onSubmit={reopenForm.onSubmit((v) => doReopen.mutate(v))}><Stack gap="sm">
           <Alert color="red" variant="light">{t('att.reopen_warning')}</Alert>
