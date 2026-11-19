@@ -29,7 +29,7 @@ export function PurchaseRequisitionFormModal({ opened, onClose, requisition, onS
   const form = useForm({ initialValues: blank });
   const depts = useQuery({ queryKey: ['dept-options'], enabled: opened && can('department.view'), queryFn: async () => (await api.get<Paginated<{ id: string; name: string }>>('/departments', { params: { per_page: 100 } })).data.data });
   const projects = useQuery({ queryKey: ['project-options'], enabled: opened && can('project.view'), queryFn: async () => (await api.get<Paginated<{ id: string; code: string; name: string }>>('/projects', { params: { per_page: 100 } })).data.data });
-  const suppliers = useQuery({ queryKey: ['supplier-options'], enabled: opened, queryFn: async () => (await api.get<Paginated<{ id: string; code: string; name: string }>>('/suppliers', { params: { per_page: 100, 'filter[status_id]': undefined } })).data.data });
+  const suppliers = useQuery({ queryKey: ['supplier-options'], enabled: opened, queryFn: async () => (await api.get<Paginated<{ id: string; code: string; name: string; status: string }>>('/suppliers', { params: { per_page: 100 } })).data.data.filter((s) => s.status === 'approved') });
 
   useEffect(() => {
     if (!opened) return;

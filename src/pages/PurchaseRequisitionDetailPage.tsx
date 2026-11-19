@@ -5,6 +5,8 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { api } from '@/api/client';
+import { CreateOrderButton } from '@/components/CreateOrderButton';
+import { CreateRfqButton } from '@/components/CreateRfqButton';
 import { ConfirmModal } from '@/components/ConfirmModal';
 import { PageHeader } from '@/components/PageHeader';
 import { PurchaseRequisitionFormModal, type ReqForEdit } from '@/components/PurchaseRequisitionFormModal';
@@ -52,6 +54,8 @@ export function PurchaseRequisitionDetailPage() {
           {r.me.can_submit && <Button onClick={() => setSubmitting(true)}>{t('req.submit')}</Button>}
           {r.me.can_reopen && <Button variant="light" loading={move.isPending} onClick={() => move.mutate({ to: 'draft', note: '' })}>{t('req.reopen')}</Button>}
           {r.me.can_cancel && <Button variant="light" color="red" onClick={() => { setCancelling(true); setNote(''); }}>{t('req.cancel')}</Button>}
+          <CreateRfqButton requisitionId={r.id} status={r.status} />
+          <CreateOrderButton requisitionId={r.id} status={r.status} preferredSupplierId={r.preferred_supplier?.id} />
           {r.me.can_delete && <Button variant="subtle" color="red" onClick={() => setDeleting(true)}>{t('common.delete')}</Button>}
         </>} />
       {r.status === 'pending_approval' && <Alert color="orange" variant="light" mb="md">{t('req.pending_note')} <Anchor component={Link} to="/approvals">{t('sup.open_approvals')}</Anchor></Alert>}

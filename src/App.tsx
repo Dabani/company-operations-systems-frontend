@@ -76,6 +76,12 @@ const EventDetailPage = pg(() => import('./pages/EventDetailPage'), 'EventDetail
 const EventRegisterPage = pg(() => import('./pages/EventRegisterPage'), 'EventRegisterPage');
 const EventTicketPage = pg(() => import('./pages/EventTicketPage'), 'EventTicketPage');
 const SuppliersPage = pg(() => import('./pages/SuppliersPage'), 'SuppliersPage');
+const PurchaseOrdersPage = pg(() => import('./pages/PurchaseOrdersPage'), 'PurchaseOrdersPage');
+const PurchaseOrderDetailPage = pg(() => import('./pages/PurchaseOrderDetailPage'), 'PurchaseOrderDetailPage');
+const RfqsPage = pg(() => import('./pages/RfqsPage'), 'RfqsPage');
+const RfqDetailPage = pg(() => import('./pages/RfqDetailPage'), 'RfqDetailPage');
+const SupplierInvoicesPage = pg(() => import('./pages/SupplierInvoicesPage'), 'SupplierInvoicesPage');
+const SupplierInvoiceDetailPage = pg(() => import('./pages/SupplierInvoiceDetailPage'), 'SupplierInvoiceDetailPage');
 const SupplierDetailPage = pg(() => import('./pages/SupplierDetailPage'), 'SupplierDetailPage');
 const PurchaseRequisitionsPage = pg(() => import('./pages/PurchaseRequisitionsPage'), 'PurchaseRequisitionsPage');
 const PurchaseRequisitionDetailPage = pg(() => import('./pages/PurchaseRequisitionDetailPage'), 'PurchaseRequisitionDetailPage');
@@ -171,6 +177,12 @@ export default function App() {
         <Route path="/suppliers/:id" element={guard('procurement.view', <SupplierDetailPage />)} />
         <Route path="/requisitions" element={guard('procurement.requisition.create', <PurchaseRequisitionsPage />)} />
         <Route path="/requisitions/:id" element={guard('procurement.requisition.create', <PurchaseRequisitionDetailPage />)} />
+        <Route path="/purchase-orders" element={guard('procurement.receive', <PurchaseOrdersPage />)} />
+        <Route path="/purchase-orders/:id" element={guard('procurement.receive', <PurchaseOrderDetailPage />)} />
+        <Route path="/rfqs" element={guard('procurement.manage', <RfqsPage />)} />
+        <Route path="/rfqs/:id" element={guard('procurement.manage', <RfqDetailPage />)} />
+        <Route path="/supplier-invoices" element={guard(['procurement.invoice', 'procurement.invoice.approve', 'procurement.invoice.pay'], <SupplierInvoicesPage />)} />
+        <Route path="/supplier-invoices/:id" element={guard(['procurement.invoice', 'procurement.invoice.approve', 'procurement.invoice.pay'], <SupplierInvoiceDetailPage />)} />
         <Route path="/meetings/rooms" element={guard('meeting.room.manage', <MeetingRoomsPage />)} />
         <Route path="/meetings/:id" element={guard('meeting.view', <MeetingDetailPage />)} />
         <Route path="/meeting-checkin/:token" element={guard('meeting.view', <MeetingCheckinPage />)} />
