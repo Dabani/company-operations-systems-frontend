@@ -71,6 +71,7 @@ const MeetingsPage = pg(() => import('./pages/MeetingsPage'), 'MeetingsPage');
 const MeetingDetailPage = pg(() => import('./pages/MeetingDetailPage'), 'MeetingDetailPage');
 const MeetingRoomsPage = pg(() => import('./pages/MeetingRoomsPage'), 'MeetingRoomsPage');
 const MeetingRsvpPage = pg(() => import('./pages/MeetingRsvpPage'), 'MeetingRsvpPage');
+const MeetingGuestJoinPage = pg(() => import('./pages/MeetingGuestJoinPage'), 'MeetingGuestJoinPage');
 const EventsPage = pg(() => import('./pages/EventsPage'), 'EventsPage');
 const EventDetailPage = pg(() => import('./pages/EventDetailPage'), 'EventDetailPage');
 const EventRegisterPage = pg(() => import('./pages/EventRegisterPage'), 'EventRegisterPage');
@@ -100,12 +101,13 @@ export default function App() {
 
   // Links from e-mails must open whether or not somebody is already signed in on this browser (the page itself asks them to
   // sign out). Previously a signed-in administrator testing an invitation landed on "page not found".
-  if (pathname === '/activate' || pathname === '/reset-password' || pathname.startsWith('/meeting-rsvp/') || pathname.startsWith('/event-register/') || pathname.startsWith('/event-ticket/')) {
+  if (pathname === '/activate' || pathname === '/reset-password' || pathname.startsWith('/meeting-rsvp/') || pathname.startsWith('/meeting-online/') || pathname.startsWith('/event-register/') || pathname.startsWith('/event-ticket/')) {
     return (
       <RouteBoundary><Routes>
         <Route path="/activate" element={<ActivatePage />} />
         <Route path="/reset-password" element={<ResetPasswordPage />} />
         <Route path="/meeting-rsvp/:token" element={<MeetingRsvpPage />} />
+        <Route path="/meeting-online/:token" element={<MeetingGuestJoinPage />} />
         <Route path="/event-register/:token" element={<EventRegisterPage />} />
         <Route path="/event-ticket/:ticket" element={<EventTicketPage />} />
       </Routes></RouteBoundary>

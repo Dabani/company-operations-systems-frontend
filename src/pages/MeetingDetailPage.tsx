@@ -13,6 +13,7 @@ import { PapersPanel } from '@/components/PapersPanel';
 import { MeetingAttendanceTab } from '@/components/MeetingAttendanceTab';
 import { MeetingMinutesTab } from '@/components/MeetingMinutesTab';
 import { MeetingFollowUpTab } from '@/components/MeetingFollowUpTab';
+import { MeetingOnlineTab } from '@/components/MeetingOnlineTab';
 import { PeopleMultiSelect, PersonSelect, usePeople } from '@/components/PeoplePicker';
 import { RichTextField } from '@/components/RichTextField';
 import { SafeHtml } from '@/components/SafeHtml';
@@ -126,6 +127,7 @@ export function MeetingDetailPage() {
           {['in_progress', 'held', 'closed'].includes(m.status) && <Tabs.Tab value="attendance">{t('meet.tab_attendance')}</Tabs.Tab>}
           {['in_progress', 'held', 'closed'].includes(m.status) && <Tabs.Tab value="minutes">{t('meet.tab_minutes')}</Tabs.Tab>}
           {['in_progress', 'held', 'closed'].includes(m.status) && <Tabs.Tab value="followups">{t('fu.menu')}</Tabs.Tab>}
+          {m.status !== 'cancelled' && <Tabs.Tab value="online">{t('meet.tab_online')}</Tabs.Tab>}
           <Tabs.Tab value="papers">{t('meet.tab_papers')}</Tabs.Tab>
           <Tabs.Tab value="history">{t('meet.tab_history')}</Tabs.Tab>
         </Tabs.List>
@@ -134,6 +136,7 @@ export function MeetingDetailPage() {
         <Tabs.Panel value="attendance"><MeetingAttendanceTab meetingId={m.id} code={m.code} /></Tabs.Panel>
         <Tabs.Panel value="minutes"><MeetingMinutesTab meetingId={m.id} /></Tabs.Panel>
         <Tabs.Panel value="followups"><MeetingFollowUpTab meetingId={m.id} /></Tabs.Panel>
+        <Tabs.Panel value="online"><MeetingOnlineTab meetingId={m.id} /></Tabs.Panel>
         <Tabs.Panel value="papers"><PapersPanel kind="meeting" id={m.id} canUpload={me.can_manage && ['draft', 'scheduled'].includes(m.status)} /></Tabs.Panel>
         <Tabs.Panel value="history"><HistoryTab m={m} /></Tabs.Panel>
       </Tabs>

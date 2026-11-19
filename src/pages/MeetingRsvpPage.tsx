@@ -50,6 +50,7 @@ export function MeetingRsvpPage() {
               </Group>
             ) : m.status !== 'cancelled' && <Text size="sm" c="dimmed">{t('meet.rsvp_closed')}</Text>}
             {error && <Alert color="red" variant="light">{error}</Alert>}
+            {m.status !== 'cancelled' && m.response !== 'declined' && <Button component="a" href={`/meeting-online/${token}`} variant="light">{t('onl.join_online')}</Button>}
             {m.status !== 'cancelled' && <Button component="a" href={`/api/v1/public/meeting-rsvp/${token}/ics`} variant="subtle" leftSection={<IconCalendarPlus size={16} />}>{t('meet.add_to_calendar')}</Button>}
           </Stack>
         </Card>

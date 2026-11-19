@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { api, parseError } from '@/api/client';
 import { PageHeader } from '@/components/PageHeader';
+import { AttachmentsPanel } from '@/components/AttachmentsPanel';
 import { SafeHtml } from '@/components/SafeHtml';
 import { StatusBadge } from '@/components/StatusBadge';
 import { fmtCents, toCents } from '@/lib/procurement';
@@ -101,6 +102,8 @@ export function RfqDetailPage() {
           </Table>
         </Table.ScrollContainer>
       </Card>
+      {r.quotes.some((x) => x.status === 'received') && <Card withBorder padding="md" mb="md"><Title order={5} mb="xs">{t('att.quote_docs')}</Title>
+        <SimpleGrid cols={{ base: 1, sm: 2 }}>{r.quotes.filter((x) => x.status === 'received').map((x) => <AttachmentsPanel key={x.id} title={x.supplier.name} endpoint={`/rfq-quote-files/${x.id}`} canUpload={['open', 'closed'].includes(r.status)} />)}</SimpleGrid></Card>}
       <Card withBorder padding="md"><Title order={5} mb="xs">{t('ev.history')}</Title>
         <Stack gap={4}>{r.history.map((h, i) => <Text size="xs" key={i}>{new Date(h.at).toLocaleString(i18n.language)} — {h.by ?? t('sup.system')}: {t(`rfq.status.${h.status}`)}{h.note ? ` (${h.note})` : ''}</Text>)}</Stack></Card>
 

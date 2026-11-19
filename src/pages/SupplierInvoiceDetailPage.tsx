@@ -6,6 +6,7 @@ import { Link, useParams } from 'react-router-dom';
 import { api } from '@/api/client';
 import { ConfirmModal } from '@/components/ConfirmModal';
 import { PageHeader } from '@/components/PageHeader';
+import { AttachmentsPanel } from '@/components/AttachmentsPanel';
 import { StatusBadge } from '@/components/StatusBadge';
 import { INVOICE_COLOR, exceptionNoteOk } from '@/lib/invoices';
 import { fmtCents, reasonOk, toCents } from '@/lib/procurement';
@@ -85,6 +86,8 @@ export function SupplierInvoiceDetailPage() {
           </Table>
         </Table.ScrollContainer>
       </Card>
+      <Card withBorder padding="md" mb="md"><Title order={5} mb="xs">{t('att.invoice_docs')}</Title>
+        <AttachmentsPanel endpoint={`/supplier-invoice-files/${i.id}`} canUpload={i.me.can_cancel && ['received', 'on_hold', 'matched', 'approved'].includes(i.status)} /></Card>
       <Card withBorder padding="md"><Title order={5} mb="xs">{t('ev.history')}</Title>
         <Stack gap={4}>{i.history.map((h, n) => <Text size="xs" key={n}>{new Date(h.at).toLocaleString(i18n.language)} — {h.by ?? t('sup.system')}: {t(`inv.status.${h.status}`)}{h.note ? ` (${h.note})` : ''}</Text>)}</Stack></Card>
       <ConfirmModal opened={dialog === 'approve'} onClose={() => setDialog(null)} loading={post.isPending} title={t('inv.approve')} text={t('inv.approve_text')} onConfirm={() => post.mutate({ path: 'approve' })} />
