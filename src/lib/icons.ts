@@ -18,5 +18,7 @@ Object.assign(MAP, { IconLayoutKanban: IconLayoutKanbanPolish, IconClock: IconCl
 // Bundle 14 menu icons
 import { IconTimeline, IconStars, IconUser, IconClipboardList, IconUserSearch, IconClockHour4, IconCalendarStats, IconAdjustmentsHorizontal, IconFileImport } from '@tabler/icons-react';
 Object.assign(MAP, { IconTimeline, IconStars, IconUser, IconClipboardList, IconUserSearch, IconClockHour4, IconCalendarStats, IconAdjustmentsHorizontal, IconFileImport });
+import { IconBeach, IconPlane, IconReceipt2 } from '@tabler/icons-react';
+Object.assign(MAP, { IconBeach, IconPlane, IconReceipt2 });
 
 export const iconFor = (name?: string | null): Icon => (name && MAP[name]) || IconCircle;

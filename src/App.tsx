@@ -67,6 +67,14 @@ const ClockPage = pg(() => import('./pages/ClockPage'), 'ClockPage');
 const TeamAttendancePage = pg(() => import('./pages/TeamAttendancePage'), 'TeamAttendancePage');
 const AttendanceSetupPage = pg(() => import('./pages/AttendanceSetupPage'), 'AttendanceSetupPage');
 const AttendanceImportPage = pg(() => import('./pages/AttendanceImportPage'), 'AttendanceImportPage');
+const MyLeavePage = pg(() => import('./pages/MyLeavePage'), 'MyLeavePage');
+const TeamLeavePage = pg(() => import('./pages/TeamLeavePage'), 'TeamLeavePage');
+const LeaveSetupPage = pg(() => import('./pages/LeaveSetupPage'), 'LeaveSetupPage');
+const TripsPage = pg(() => import('./pages/TripsPage'), 'TripsPage');
+const TripDetailPage = pg(() => import('./pages/TripDetailPage'), 'TripDetailPage');
+const TripAuthorizationPage = pg(() => import('./pages/TripAuthorizationPage'), 'TripAuthorizationPage');
+const TripsFinancePage = pg(() => import('./pages/TripsFinancePage'), 'TripsFinancePage');
+const TripRatesPage = pg(() => import('./pages/TripRatesPage'), 'TripRatesPage');
 const MeetingsPage = pg(() => import('./pages/MeetingsPage'), 'MeetingsPage');
 const MeetingDetailPage = pg(() => import('./pages/MeetingDetailPage'), 'MeetingDetailPage');
 const MeetingRoomsPage = pg(() => import('./pages/MeetingRoomsPage'), 'MeetingRoomsPage');
@@ -172,6 +180,14 @@ export default function App() {
         <Route path="/attendance/team" element={guard(['hr.attendance.view', 'hr.attendance.manage'], <TeamAttendancePage />)} />
         <Route path="/attendance/setup" element={guard('hr.attendance.manage', <AttendanceSetupPage />)} />
         <Route path="/attendance/import" element={guard('hr.attendance.manage', <AttendanceImportPage />)} />
+        <Route path="/leave/me" element={guard('hr.leave.request', <MyLeavePage />)} />
+        <Route path="/leave/team" element={guard(['hr.leave.view', 'hr.leave.manage'], <TeamLeavePage />)} />
+        <Route path="/leave/setup" element={guard(['hr.leave.manage', 'hr.leave.legal.manage', 'hr.leave.profile', 'rules.view'], <LeaveSetupPage />)} />
+        <Route path="/trips" element={guard(['hr.trip.request', 'hr.trip.view', 'hr.trip.finance'], <TripsPage />)} />
+        <Route path="/trips/finance" element={guard('hr.trip.finance', <TripsFinancePage />)} />
+        <Route path="/trips/rates" element={guard(['hr.trip.configure', 'hr.trip.finance'], <TripRatesPage />)} />
+        <Route path="/trips/:id/authorization" element={guard(['hr.trip.request', 'hr.trip.view', 'hr.trip.finance'], <TripAuthorizationPage />)} />
+        <Route path="/trips/:id" element={guard(['hr.trip.request', 'hr.trip.view', 'hr.trip.finance'], <TripDetailPage />)} />
         <Route path="/meetings" element={guard('meeting.view', <MeetingsPage />)} />
         <Route path="/events" element={guard('event.view', <EventsPage />)} />
         <Route path="/events/:id" element={guard('event.view', <EventDetailPage />)} />
