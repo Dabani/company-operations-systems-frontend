@@ -75,6 +75,13 @@ const TripDetailPage = pg(() => import('./pages/TripDetailPage'), 'TripDetailPag
 const TripAuthorizationPage = pg(() => import('./pages/TripAuthorizationPage'), 'TripAuthorizationPage');
 const TripsFinancePage = pg(() => import('./pages/TripsFinancePage'), 'TripsFinancePage');
 const TripRatesPage = pg(() => import('./pages/TripRatesPage'), 'TripRatesPage');
+const PayrollSetupPage = pg(() => import('./pages/PayrollSetupPage'), 'PayrollSetupPage');
+const PayrollRunsPage = pg(() => import('./pages/PayrollRunsPage'), 'PayrollRunsPage');
+const PayrollRunDetailPage = pg(() => import('./pages/PayrollRunDetailPage'), 'PayrollRunDetailPage');
+const PayslipPage = pg(() => import('./pages/PayslipPage'), 'PayslipPage');
+const PayrollExportsPage = pg(() => import('./pages/PayrollExportsPage'), 'PayrollExportsPage');
+const MyPayslipsPage = pg(() => import('./pages/MyPayslipsPage'), 'MyPayslipsPage');
+const MyPayslipPage = pg(() => import('./pages/MyPayslipsPage'), 'MyPayslipPage');
 const MeetingsPage = pg(() => import('./pages/MeetingsPage'), 'MeetingsPage');
 const MeetingDetailPage = pg(() => import('./pages/MeetingDetailPage'), 'MeetingDetailPage');
 const MeetingRoomsPage = pg(() => import('./pages/MeetingRoomsPage'), 'MeetingRoomsPage');
@@ -188,6 +195,13 @@ export default function App() {
         <Route path="/trips/rates" element={guard(['hr.trip.configure', 'hr.trip.finance'], <TripRatesPage />)} />
         <Route path="/trips/:id/authorization" element={guard(['hr.trip.request', 'hr.trip.view', 'hr.trip.finance'], <TripAuthorizationPage />)} />
         <Route path="/trips/:id" element={guard(['hr.trip.request', 'hr.trip.view', 'hr.trip.finance'], <TripDetailPage />)} />
+        <Route path="/payroll/setup" element={guard(['hr.payroll.view', 'hr.payroll.configure', 'hr.payroll.verify', 'hr.payroll.prepare'], <PayrollSetupPage />)} />
+        <Route path="/payroll/runs" element={guard(['hr.payroll.view', 'hr.payroll.configure', 'hr.payroll.verify', 'hr.payroll.prepare', 'hr.payroll.review', 'hr.payroll.approve', 'hr.payroll.approve_md', 'hr.payroll.lock', 'hr.payroll.pay', 'hr.payroll.declare'], <PayrollRunsPage />)} />
+        <Route path="/payroll/runs/:id" element={guard(['hr.payroll.view', 'hr.payroll.configure', 'hr.payroll.verify', 'hr.payroll.prepare', 'hr.payroll.review', 'hr.payroll.approve', 'hr.payroll.approve_md', 'hr.payroll.lock', 'hr.payroll.pay', 'hr.payroll.declare'], <PayrollRunDetailPage />)} />
+        <Route path="/payroll/payslips/:id" element={guard(['hr.payroll.view', 'hr.payroll.configure', 'hr.payroll.verify', 'hr.payroll.prepare', 'hr.payroll.review', 'hr.payroll.approve', 'hr.payroll.approve_md', 'hr.payroll.lock', 'hr.payroll.pay', 'hr.payroll.declare'], <PayslipPage />)} />
+        <Route path="/payroll/exports" element={guard(['hr.payroll.export', 'hr.payroll.export.configure'], <PayrollExportsPage />)} />
+        <Route path="/payroll/me" element={guard('hr.payslip.own', <MyPayslipsPage />)} />
+        <Route path="/payroll/me/:id" element={guard('hr.payslip.own', <MyPayslipPage />)} />
         <Route path="/meetings" element={guard('meeting.view', <MeetingsPage />)} />
         <Route path="/events" element={guard('event.view', <EventsPage />)} />
         <Route path="/events/:id" element={guard('event.view', <EventDetailPage />)} />
